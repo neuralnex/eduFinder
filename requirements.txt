@@ -1,0 +1,8 @@
+uagents
+httpx
+pydantic
+python-dotenv
+youtube-search-python
+requests
+aiohttp
+#hyperon>=0.2.8

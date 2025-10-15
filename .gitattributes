@@ -1,0 +1,31 @@
+# Ensure line endings are handled properly
+*.py text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+
+# Binary files
+*.whl binary
+*.tar.gz binary
+*.zip binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+
+# Python files
+*.py linguist-language=Python
+*.pyx linguist-language=Python
+*.pyi linguist-language=Python
+
+# Shell scripts
+*.sh linguist-language=Shell
+*.bash linguist-language=Shell
+
+# Documentation
+*.md linguist-language=Markdown
+README.md linguist-documentation
+LICENSE linguist-documentation
