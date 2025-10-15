@@ -52,11 +52,17 @@ Our system consists of three specialized AI agents that collaborate to provide c
 
 ```
 eduFinder/
-├── agent.py                        # Main system launcher
-├── curriculum_agent.py             # Curriculum planning agent
-├── materials_agent.py              # Resource discovery agent
-├── enhanced_curriculum_agent.py    # MeTTa-integrated agent
-├── metta_integration.py           # Knowledge graph integration
+├── agents/                        # Agent implementations
+│   ├── __init__.py
+│   ├── curriculum_agent.py        # Curriculum creation specialist
+│   ├── materials_agent.py         # Resource discovery specialist
+│   └── enhanced_agent.py          # Deep insights specialist
+├── services/                      # Service implementations
+│   ├── __init__.py
+│   ├── gemini_service.py          # Gemini AI integration service
+│   └── metta_integration.py       # MeTTa knowledge graph integration
+├── agent.py                       # Main unified agent interface
+├── app.py                         # Multi-agent launcher
 ├── config.py                      # Configuration management
 ├── requirements.txt               # Dependencies
 ├── README.md                      # This file
@@ -64,19 +70,43 @@ eduFinder/
 └── .gitattributes                 # Git attributes
 ```
 
+## 🚀 Inter-Agent Communication System
+
+The system uses modern uAgents message passing for seamless communication between specialized agents:
+
+### **📋 Communication Flow:**
+1. **User Query** → Main Agent (agent.py)
+2. **Main Agent** → Routes to Specialized Agent
+3. **Specialized Agent** → Processes with Gemini AI
+4. **Specialized Agent** → Sends Response back to Main Agent
+5. **Main Agent** → Delivers Response to User
+
+### **🔧 Message Models:**
+- `Request/Response` - General agent communication
+- `CurriculumRequest/Response` - Curriculum-specific communication
+- `MaterialsRequest/Response` - Materials-specific communication
+- `InsightsRequest/Response` - Insights-specific communication
+
+### **🎯 Agent Addresses:**
+- **Main Agent**: `agent1q0zgf9tmxl5rt4aurgx4uv0qhzmur2hzqzzhatrnd59hymvs0y2jz5m68q8` (Port 8000)
+- **Curriculum Agent**: `agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8` (Port 8001)
+- **Materials Agent**: `agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf` (Port 8002)
+- **Enhanced Agent**: `agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4` (Port 8003)
+
 ## 🛠️ Technology Stack
 
 ### Core Technologies
 - **uAgents Framework**: Fetch.ai's agent framework for autonomous AI
-- **MeTTa Knowledge Graph**: SingularityNET's knowledge representation system
+- **Gemini AI**: Google's AI for content generation and insights
+- **YouTube Search API**: Real-time educational video discovery
 - **Chat Protocol**: ASI-wide communication standard
 - **Agentverse**: ASI ecosystem registry and orchestration layer
 
 ### Supporting Technologies
 - **Python 3.8+**: Core programming language
-- **YouTube Search API**: Educational video discovery
-- **aiohttp**: Asynchronous HTTP client for MeTTa integration
+- **aiohttp**: Asynchronous HTTP client
 - **Pydantic**: Data validation and serialization
+- **Environment Variables**: Configuration management
 
 ## 🚀 Quick Start
 
@@ -113,85 +143,96 @@ eduFinder/
 
 **Start All Agents**
 ```bash
-python agent.py start
+python app.py
 ```
 
-**Test System Components**
+**Start Individual Agents**
 ```bash
-python agent.py test
+# Curriculum Agent (port 8001)
+python agents/curriculum_agent.py
+
+# Materials Agent (port 8002)
+python agents/materials_agent.py
+
+# Enhanced Agent (port 8003)
+python agents/enhanced_agent.py
 ```
 
-**Check System Status**
-```bash
-python agent.py status
-```
-
-**Get Help**
-```bash
-python agent.py help
-```
-
-### Running Individual Agents
-
-**Curriculum Agent**
-```bash
-python curriculum_agent.py
-```
-
-**Materials Agent**
-```bash
-python materials_agent.py
-```
-
-**Enhanced Learning Agent (with MeTTa)**
-```bash
-python enhanced_curriculum_agent.py
-```
+The system provides three specialized agents:
+- **Curriculum Agent** - Creates structured learning paths
+- **Materials Agent** - Discovers educational resources  
+- **Enhanced Agent** - Provides deep insights via MeTTa
 
 ## 🎯 Agent Details
 
 ### 📚 Curriculum Agent
-- **Address**: `agent1q...` (generated on first run)
-- **Purpose**: Creates structured learning paths for various domains
+- **Port**: 8001
+- **Name**: CurriculumAgent
+- **Description**: Specializes in creating structured learning paths and curricula
 - **Capabilities**:
-  - AI Engineering curriculum
-  - Web3 Development path
-  - Data Science learning plan
-  - Personalized difficulty adjustment
+  - **Curriculum Creation** - Structured learning paths for various domains
+  - **Learning Module Organization** - Break down complex subjects into manageable steps
+  - **Prerequisite Identification** - Show what you need to learn first
+  - **Learning Sequence Planning** - Optimal order for mastering concepts
 
-### 🎥 Materials Agent  
-- **Address**: `agent1q...` (generated on first run)
-- **Purpose**: Sources educational videos and learning resources
+### 🎥 Materials Agent
+- **Port**: 8002
+- **Name**: MaterialsAgent
+- **Description**: Specializes in discovering and providing educational resources
 - **Capabilities**:
-  - YouTube video discovery
-  - Course recommendations
-  - Book suggestions
-  - Project ideas
-  - Learning tips and schedules
+  - **Resource Discovery** - Educational videos, courses, books, and projects
+  - **YouTube Search** - Real-time educational content discovery
+  - **Learning Materials** - Curated resources for specific topics
+  - **Project Suggestions** - Hands-on exercises and practical applications
 
 ### 🧠 Enhanced Learning Agent
-- **Address**: `agent1q...` (generated on first run)
-- **Purpose**: Intelligent curriculum planning with knowledge graph
+- **Port**: 8003
+- **Name**: EnhancedAgent
+- **Description**: Provides deep insights using MeTTa Knowledge Graph integration
 - **Capabilities**:
-  - MeTTa Knowledge Graph integration
-  - Concept relationship understanding
-  - Prerequisite analysis
-  - Optimal learning sequence suggestion
-  - Deep concept explanations
+  - **Knowledge Graph Integration** - Understands concept relationships and dependencies
+  - **Deep Concept Analysis** - Explains how different topics connect
+  - **Prerequisite Mapping** - Knows what you need to learn before advanced topics
+  - **Learning Sequence Optimization** - Suggests the best order to learn concepts
+  - **Cross-Domain Connections** - Shows how concepts relate across different fields
+
+### 🧠 MeTTa Knowledge Graph Integration
+- **Purpose**: Provides intelligent concept relationships and learning dependencies
+- **Features**:
+  - Concept prerequisite mapping
+  - Learning path optimization
+  - Cross-domain knowledge connections
+  - Smart learning sequence suggestions
+
+### 🔍 RAG (Retrieval-Augmented Generation) System
+- **Purpose**: Provides comprehensive learning resources and intelligent responses
+- **Features**:
+  - Learning domain management (AI Engineering, Web3 Development, Data Science)
+  - Educational resource curation (videos, courses, books, projects)
+  - YouTube search integration for real-time content discovery
+  - MeTTa knowledge graph integration for deep insights
+  - Intelligent request routing and response generation
 
 ## 🔧 Configuration
 
 ### Environment Variables
 ```bash
 # Agent Configuration
-AGENT_SEED=your-unique-seed-here
-AGENT_NAME=LearningPathAgent
+AGENT_SEED=your-main-agent-seed-here
 
-# Optional: YouTube API for enhanced search
+# Individual Agent Seeds
+CURRICULUM_AGENT_SEED=curriculum_agent_seed_2024
+MATERIALS_AGENT_SEED=materials_agent_seed_2024
+ENHANCED_AGENT_SEED=enhanced_agent_seed_2024
+
+# AI Services
+GEMINI_API_KEY=your-gemini-api-key-here
 YOUTUBE_API_KEY=your-youtube-api-key
 
 # MeTTa Knowledge Graph
 METTA_ENDPOINT=http://localhost:8080
+METTA_SPACE=learning_space
+METTA_USE_MOCK=false
 
 # Agentverse
 AGENTVERSE_ENDPOINT=https://agentverse.ai
@@ -316,9 +357,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📞 Contact
 
-- **Project Lead**: [Your Name]
-- **Email**: [your.email@example.com]
-- **GitHub**: [yourusername]
+- **Project Lead**: [Omeziri Zion Echezona]
+- **Email**: [Omezirizion@gmail.com]
+- **GitHub**: [neuralnex]
 - **Agent Addresses**: Available after deployment
 
 ---

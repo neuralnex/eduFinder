@@ -60,6 +60,9 @@ logs/
 *.temp
 *.bak
 *.backup
+addy.txt
+*.txt
+!README.txt
 
 # Agent specific
 *.wallet
