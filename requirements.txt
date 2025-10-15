@@ -5,4 +5,4 @@ python-dotenv
 youtube-search-python
 requests
 aiohttp
-#hyperon>=0.2.8
+hyperon
