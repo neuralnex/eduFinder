@@ -5,7 +5,7 @@ from datetime import datetime
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from config import METTA_ENDPOINT, METTA_SPACE, METTA_USE_MOCK
 
@@ -29,15 +29,15 @@ class MeTTaKnowledgeGraph:
             try:
                 self.metta = MeTTa()
                 await self._initialize_knowledge_graph()
-                print("✅ Connected to Real MeTTa Knowledge Graph")
+                print("Connected to Real MeTTa Knowledge Graph")
             except Exception as e:
-                print(f"⚠️ Real MeTTa initialization failed: {e}, falling back to mock data")
+                print(f"Real MeTTa initialization failed: {e}, falling back to mock data")
                 self.use_real_metta = False
         else:
             if not HYPERON_AVAILABLE:
-                print("📚 Using Mock MeTTa (hyperon not installed)")
+                print("Using Mock MeTTa (hyperon not installed)")
             else:
-                print("📚 Using Mock MeTTa (METTA_USE_MOCK=true)")
+                print("Using Mock MeTTa (METTA_USE_MOCK=true)")
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -173,7 +173,7 @@ class MeTTaKnowledgeGraph:
             for concept, time_est in time_estimates.items():
                 self.metta.space().add_atom(E(S("time_estimate"), S(concept), ValueAtom(time_est)))
             
-            print(f"✅ Initialized MeTTa knowledge graph with {len(concepts_data)} concepts")
+            print(f"Initialized MeTTa knowledge graph with {len(concepts_data)} concepts")
             
         except Exception as e:
             print(f"Error initializing MeTTa knowledge graph: {e}")
@@ -453,7 +453,7 @@ class MeTTaKnowledgeGraph:
                 if "estimated_time" in knowledge_data:
                     self.metta.space().add_atom(E(S("time_estimate"), S(concept_key), ValueAtom(knowledge_data["estimated_time"])))
                 
-                print(f"✅ Added knowledge for {concept} to MeTTa")
+                print(f"Added knowledge for {concept} to MeTTa")
                 return True
                 
             except Exception as e:

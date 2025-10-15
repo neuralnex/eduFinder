@@ -16,7 +16,7 @@ from uagents_core.contrib.protocols.chat import (
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from config import AGENT_SEED, AGENT_NAME, AGENT_DESCRIPTION
 
@@ -142,11 +142,11 @@ def generate_curriculum_response(domain: str, user_level: str = "beginner") -> s
     domain_info = LEARNING_DOMAINS[domain]
     
     response = f"""
-🎓 **{domain_info['name']} Learning Path**
+**{domain_info['name']} Learning Path**
 
-📋 **Overview**: {domain_info['description']}
-⏱️ **Duration**: {domain_info['duration']}
-📚 **Prerequisites**: {', '.join(domain_info['prerequisites'])}
+**Overview**: {domain_info['description']}
+**Duration**: {domain_info['duration']}
+**Prerequisites**: {', '.join(domain_info['prerequisites'])}
 
 **Learning Modules:**
 
@@ -162,7 +162,7 @@ def generate_curriculum_response(domain: str, user_level: str = "beginner") -> s
 """
     
     response += """
-🚀 **Next Steps**: 
+**Next Steps**: 
 I'll now connect you with our Learning Materials Agent to get specific resources, videos, and hands-on projects for each module!
 
 Would you like me to:
@@ -186,7 +186,7 @@ async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
         if isinstance(item, StartSessionContent):
             ctx.logger.info(f"Session started with {sender}")
             welcome_message = create_text_chat("""
-🎓 **Welcome to Learning Path Agent!**
+**Welcome to Learning Path Agent!**
 
 I'm your AI learning companion that creates personalized curricula and guides your educational journey.
 
@@ -208,7 +208,7 @@ Just tell me what you'd like to learn! For example:
 - "I want to learn Web3 development"
 - "Create a data science curriculum"
 
-What would you like to learn today? 🚀
+What would you like to learn today?
             """)
             await ctx.send(sender, welcome_message)
             
@@ -227,10 +227,10 @@ What would you like to learn today? 🚀
                 response = """
 **I can help you with:**
 
-🎯 **Curriculum Creation**: I create structured learning paths for various technical domains
-📚 **Learning Materials**: I connect you with videos, tutorials, and hands-on projects
-🔄 **Progress Tracking**: I help you stay on track and suggest next steps
-🎓 **Personalized Learning**: I adapt to your skill level and learning preferences
+**Curriculum Creation**: I create structured learning paths for various technical domains
+**Learning Materials**: I connect you with videos, tutorials, and hands-on projects
+**Progress Tracking**: I help you stay on track and suggest next steps
+**Personalized Learning**: I adapt to your skill level and learning preferences
 
 **Try asking me:**
 - "Teach me AI engineering"
@@ -238,7 +238,7 @@ What would you like to learn today? 🚀
 - "Create a data science curriculum"
 - "What learning domains do you support?"
 
-What would you like to learn? 🚀
+What would you like to learn?
                 """
             else:
                 response = f"""
@@ -251,7 +251,7 @@ I currently support these learning domains:
 
 Would you like me to create a curriculum for one of these domains, or would you like to suggest a new learning area?
 
-You can also ask me "help" to see all my capabilities! 🎓
+You can also ask me "help" to see all my capabilities!
                 """
             
             response_message = create_text_chat(response)
@@ -260,7 +260,7 @@ You can also ask me "help" to see all my capabilities! 🎓
         elif isinstance(item, EndSessionContent):
             ctx.logger.info(f"Session ended with {sender}")
             goodbye_message = create_text_chat("""
-👋 **Thank you for learning with me!**
+**Thank you for learning with me!**
 
 Remember:
 • Learning is a journey, not a destination
@@ -268,7 +268,7 @@ Remember:
 • Don't hesitate to ask questions
 • Connect with our Learning Materials Agent for specific resources
 
-Happy learning! 🎓✨
+Happy learning!
             """)
             await ctx.send(sender, goodbye_message)
             

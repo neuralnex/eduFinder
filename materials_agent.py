@@ -24,7 +24,7 @@ from uagents_core.contrib.protocols.chat import (
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from config import AGENT_SEED, AGENT_NAME, AGENT_DESCRIPTION
 
@@ -233,22 +233,22 @@ def format_learning_resources(domain: str, module: str, videos: List[Dict[str, s
     static_resources = LEARNING_RESOURCES.get(domain, {}).get(module, {})
     
     response = f"""
-📚 **Learning Resources for {module.replace('_', ' ').title()}**
+**Learning Resources for {module.replace('_', ' ').title()}**
 
-🎥 **Recommended Videos:**
+**Recommended Videos:**
 """
     
     for video in static_resources.get("videos", []):
         response += f"• {video}\n"
     
     if videos:
-        response += "\n🔍 **Latest YouTube Videos:**\n"
+        response += "\n**Latest YouTube Videos:**\n"
         for video in videos[:3]:
             response += f"• [{video['title']}]({video['url']})\n"
-            response += f"  📺 {video['channel']} | ⏱️ {video['duration']} | 👀 {video['views']}\n"
+            response += f"  {video['channel']} | {video['duration']} | {video['views']}\n"
     
     if static_resources.get("courses"):
-        response += "\n🎓 **Online Courses:**\n"
+        response += "\n**Online Courses:**\n"
         for course in static_resources["courses"]:
             response += f"• {course}\n"
     
@@ -263,7 +263,7 @@ def format_learning_resources(domain: str, module: str, videos: List[Dict[str, s
             response += f"• {project}\n"
     
     response += """
-💡 **Learning Tips:**
+**Learning Tips:**
 • Start with the fundamentals before moving to advanced topics
 • Practice with hands-on projects
 • Join online communities and forums
@@ -291,7 +291,7 @@ async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
         if isinstance(item, StartSessionContent):
             ctx.logger.info(f"Session started with {sender}")
             welcome_message = create_text_chat("""
-📚 **Welcome to Learning Materials Agent!**
+**Welcome to Learning Materials Agent!**
 
 I'm your educational resource specialist that finds the best learning materials for your journey.
 
@@ -308,7 +308,7 @@ Tell me what specific topic or module you'd like resources for! For example:
 - "Find videos about deep learning"
 - "I need materials for Web3 smart contracts"
 
-What would you like to learn about? 🎓
+What would you like to learn about?
             """)
             await ctx.send(sender, welcome_message)
             
@@ -379,7 +379,7 @@ What would you like to learn about? 🎓
 - "I need materials for Web3 smart contracts"
 - "Show me data science tutorials"
 
-What specific topic interests you? 🚀
+What specific topic interests you?
                 """
             else:
                 response = f"""
@@ -395,7 +395,7 @@ Please be more specific about which domain and topic you'd like resources for. F
 - "Find videos about Web3 smart contracts"
 - "Show me data science tutorials"
 
-You can also ask me "help" to see all my capabilities! 📚
+You can also ask me "help" to see all my capabilities!
                 """
             
             response_message = create_text_chat(response)
@@ -404,7 +404,7 @@ You can also ask me "help" to see all my capabilities! 📚
         elif isinstance(item, EndSessionContent):
             ctx.logger.info(f"Session ended with {sender}")
             goodbye_message = create_text_chat("""
-👋 **Happy Learning!**
+**Happy Learning!**
 
 Remember:
 • Practice regularly with hands-on projects
@@ -412,7 +412,7 @@ Remember:
 • Build a portfolio to showcase your skills
 • Stay curious and keep exploring!
 
-Good luck with your learning journey! 🎓✨
+Good luck with your learning journey!
             """)
             await ctx.send(sender, goodbye_message)
             

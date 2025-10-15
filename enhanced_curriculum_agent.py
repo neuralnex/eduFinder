@@ -17,10 +17,10 @@ from uagents_core.contrib.protocols.chat import (
 
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from config import AGENT_SEED, AGENT_NAME, AGENT_DESCRIPTION
-from agents.metta_integration import MeTTaKnowledgeGraph
+from metta_integration import MeTTaKnowledgeGraph
 
 enhanced_agent = Agent(
     name="EnhancedLearningAgent",
@@ -44,32 +44,32 @@ async def generate_enhanced_curriculum(domain: str, user_level: str = "beginner"
             
             if concept_data:
                 response = f"""
-🧠 **Deep Dive: {concept_data.get('concept', specific_concept)}**
+**Deep Dive: {concept_data.get('concept', specific_concept)}**
 
 📖 **Definition**: {concept_data.get('definition', 'No definition available')}
 
-📋 **Prerequisites**:
+**Prerequisites**:
 """
                 for prereq in concept_data.get('prerequisites', []):
                     response += f"• {prereq}\n"
                 
                 response += f"""
-🔗 **Related Concepts**:
+**Related Concepts**:
 """
                 for related in concept_data.get('related_concepts', []):
                     response += f"• {related}\n"
                 
                 response += f"""
-📚 **Learning Path**:
+**Learning Path**:
 """
                 for i, step in enumerate(concept_data.get('learning_path', []), 1):
                     response += f"{i}. {step}\n"
                 
                 response += f"""
-⏱️ **Estimated Time**: {concept_data.get('estimated_time', 'Not specified')}
-🎯 **Difficulty Level**: {concept_data.get('difficulty_level', 'Not specified')}
+**Estimated Time**: {concept_data.get('estimated_time', 'Not specified')}
+**Difficulty Level**: {concept_data.get('difficulty_level', 'Not specified')}
 
-💡 **Next Steps**: 
+**Next Steps**: 
 I can connect you with our Learning Materials Agent to get specific resources for each step in your learning path!
 """
             else:
@@ -93,7 +93,7 @@ I'm using our MeTTa Knowledge Graph to create a personalized curriculum for you!
             if concepts:
                 learning_order = await metta.suggest_learning_order(domain, concepts)
                 
-                response += "📚 **Recommended Learning Sequence**:\n\n"
+                response += "**Recommended Learning Sequence**:\n\n"
                 
                 for i, concept in enumerate(learning_order, 1):
                     concept_data = await metta.query_learning_concepts(domain, concept)
@@ -107,7 +107,7 @@ I'm using our MeTTa Knowledge Graph to create a personalized curriculum for you!
 """
                 
                 response += """
-🚀 **Personalized Recommendations**:
+**Personalized Recommendations**:
 Based on your learning level and the knowledge graph analysis, I recommend:
 
 1. **Start with the fundamentals** - Build a strong foundation
@@ -115,14 +115,14 @@ Based on your learning level and the knowledge graph analysis, I recommend:
 3. **Connect concepts** - Understand how different topics relate
 4. **Track progress** - Monitor your learning journey
 
-💡 **Ready to dive deeper?**
+**Ready to dive deeper?**
 Tell me which specific concept you'd like to explore, and I'll provide:
 • Detailed learning path
 • Prerequisites and dependencies
 • Related concepts to explore
 • Connection to learning materials
 
-What would you like to learn first? 🎯
+What would you like to learn first?
 """
             else:
                 response += "I'm still building knowledge about this domain. Let me connect you with our Learning Materials Agent for resources!"
@@ -142,16 +142,16 @@ async def handle_message(ctx: Context, sender: str, msg: ChatMessage):
         if isinstance(item, StartSessionContent):
             ctx.logger.info(f"Session started with {sender}")
             welcome_message = create_text_chat("""
-🧠 **Welcome to Enhanced Learning Agent!**
+**Welcome to Enhanced Learning Agent!**
 
 I'm your AI learning companion powered by MeTTa Knowledge Graph technology!
 
 **What makes me special:**
-• 🧠 **Knowledge Graph Integration** - I understand concept relationships and dependencies
-• 🎯 **Personalized Learning Paths** - I create curricula based on your skill level
-• 🔗 **Concept Connections** - I show you how different topics relate to each other
-• 📚 **Structured Learning** - I break down complex subjects into manageable steps
-• 🚀 **Smart Recommendations** - I suggest optimal learning sequences
+• **Knowledge Graph Integration** - I understand concept relationships and dependencies
+• **Personalized Learning Paths** - I create curricula based on your skill level
+• **Concept Connections** - I show you how different topics relate to each other
+• **Structured Learning** - I break down complex subjects into manageable steps
+• **Smart Recommendations** - I suggest optimal learning sequences
 
 **Supported Learning Domains:**
 • **AI Engineering** - Machine learning, deep learning, AI production
@@ -208,13 +208,13 @@ What would you like to explore? 🎓✨
                 response = """
 **I'm your Enhanced Learning Agent powered by MeTTa Knowledge Graph!**
 
-🧠 **My Special Capabilities:**
+**My Special Capabilities:**
 • **Concept Understanding** - I know how different topics relate to each other
 • **Learning Dependencies** - I understand prerequisites and learning order
 • **Personalized Paths** - I create curricula tailored to your needs
 • **Deep Dives** - I can explain specific concepts in detail
 
-🎯 **What I can help you with:**
+**What I can help you with:**
 • Create structured learning curricula
 • Explain complex concepts and their relationships
 • Suggest optimal learning sequences
@@ -227,7 +227,7 @@ What would you like to explore? 🎓✨
 - "Create a Web3 development path"
 - "What are the prerequisites for deep learning?"
 
-What would you like to learn about? 🚀
+What would you like to learn about?
                 """
             else:
                 response = f"""
@@ -253,9 +253,9 @@ Please specify which domain interests you, or ask me "help" to see all my capabi
         elif isinstance(item, EndSessionContent):
             ctx.logger.info(f"Session ended with {sender}")
             goodbye_message = create_text_chat("""
-👋 **Thank you for learning with me!**
+**Thank you for learning with me!**
 
-🧠 **Remember:**
+**Remember:**
 • Learning is a journey of connected concepts
 • Understanding relationships between topics is key
 • Take time to explore prerequisites and dependencies

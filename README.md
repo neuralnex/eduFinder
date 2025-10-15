@@ -48,24 +48,20 @@ Our system consists of three specialized AI agents that collaborate to provide c
                     └─────────────────┘
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 eduFinder/
-├── agents/                          # 🤖 AI Agents Package
-│   ├── __init__.py                 # Package initialization
-│   ├── curriculum_agent.py         # 📚 Curriculum planning agent
-│   ├── materials_agent.py          # 🎥 Resource discovery agent  
-│   ├── enhanced_curriculum_agent.py # 🧠 MeTTa-integrated agent
-│   └── metta_integration.py        # 🔧 Knowledge graph integration
-├── config.py                       # ⚙️ Configuration management
-├── requirements.txt                # 📦 Dependencies
-├── deploy.py                       # 🚀 Deployment script
-├── test_agents.py                  # 🧪 Test suite
-├── demo.py                        # 🎬 Demo script
-├── env.example                    # ⚙️ Environment template
-├── setup.sh                       # 🛠️ Quick setup script
-└── README.md                      # 📖 Comprehensive documentation
+├── agent.py                        # Main system launcher
+├── curriculum_agent.py             # Curriculum planning agent
+├── materials_agent.py              # Resource discovery agent
+├── enhanced_curriculum_agent.py    # MeTTa-integrated agent
+├── metta_integration.py           # Knowledge graph integration
+├── config.py                      # Configuration management
+├── requirements.txt               # Dependencies
+├── README.md                      # This file
+├── .gitignore                     # Git ignore rules
+└── .gitattributes                 # Git attributes
 ```
 
 ## 🛠️ Technology Stack
@@ -113,21 +109,43 @@ eduFinder/
    python deploy.py
    ```
 
+### Running the System
+
+**Start All Agents**
+```bash
+python agent.py start
+```
+
+**Test System Components**
+```bash
+python agent.py test
+```
+
+**Check System Status**
+```bash
+python agent.py status
+```
+
+**Get Help**
+```bash
+python agent.py help
+```
+
 ### Running Individual Agents
 
 **Curriculum Agent**
 ```bash
-python agents/curriculum_agent.py
+python curriculum_agent.py
 ```
 
 **Materials Agent**
 ```bash
-python agents/materials_agent.py
+python materials_agent.py
 ```
 
 **Enhanced Learning Agent (with MeTTa)**
 ```bash
-python agents/enhanced_curriculum_agent.py
+python enhanced_curriculum_agent.py
 ```
 
 ## 🎯 Agent Details
