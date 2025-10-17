@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import asyncio
 import json
@@ -46,6 +45,69 @@ def create_text_chat(text: str, end_session: bool = False) -> ChatMessage:
         content=content
     )
 
+def _extract_topic_from_query(query: str) -> str:
+    query_lower = query.lower()
+    
+    common_tech_topics = [
+        "machine learning", "deep learning", "neural networks", "artificial intelligence",
+        "blockchain", "smart contracts", "solidity", "ethereum", "web3",
+        "data science", "data analysis", "statistics", "pandas", "numpy",
+        "python", "javascript", "typescript", "react", "nodejs", "vue", "angular",
+        "java", "c++", "c#", "go", "rust", "swift", "kotlin",
+        "frontend", "backend", "full stack", "mobile development", "ios", "android",
+        "devops", "docker", "kubernetes", "aws", "azure", "gcp",
+        "cybersecurity", "ethical hacking", "penetration testing",
+        "game development", "unity", "unreal engine",
+        "ui/ux design", "figma", "adobe", "design systems",
+        "database", "sql", "mongodb", "postgresql", "redis",
+        "microservices", "api development", "rest", "graphql",
+        "cloud computing", "serverless", "lambda", "terraform",
+        "machine learning ops", "mlops", "data engineering",
+        "quantum computing", "robotics", "iot", "embedded systems"
+    ]
+    
+    for topic in common_tech_topics:
+        if topic in query_lower:
+            return topic.replace(" ", "_")
+    
+    words = query_lower.split()
+    if len(words) >= 2:
+        return "_".join(words[:2])
+    else:
+        return words[0] if words else "general_learning"
+
+def _extract_domain_from_query(query: str) -> str:
+    query_lower = query.lower()
+    
+    domain_mappings = {
+        "ai_engineering": ["ai", "artificial intelligence", "machine learning", "deep learning", "neural networks", "ml", "dl"],
+        "web3_development": ["web3", "blockchain", "smart contracts", "solidity", "ethereum", "crypto", "defi", "nft"],
+        "data_science": ["data science", "data analysis", "statistics", "pandas", "numpy", "analytics", "big data"],
+        "web_development": ["web development", "frontend", "backend", "full stack", "react", "vue", "angular", "nodejs", "javascript"],
+        "mobile_development": ["mobile development", "ios", "android", "swift", "kotlin", "react native", "flutter"],
+        "devops": ["devops", "docker", "kubernetes", "aws", "azure", "gcp", "ci/cd", "infrastructure"],
+        "cybersecurity": ["cybersecurity", "security", "ethical hacking", "penetration testing", "network security"],
+        "game_development": ["game development", "unity", "unreal engine", "gaming", "game design"],
+        "ui_ux_design": ["ui", "ux", "design", "figma", "adobe", "user interface", "user experience"],
+        "cloud_computing": ["cloud", "aws", "azure", "gcp", "serverless", "lambda", "terraform"],
+        "database": ["database", "sql", "mongodb", "postgresql", "redis", "data storage"],
+        "software_engineering": ["software engineering", "programming", "coding", "algorithms", "data structures"]
+    }
+    
+    for domain, keywords in domain_mappings.items():
+        for keyword in keywords:
+            if keyword in query_lower:
+                return domain
+    
+    if any(word in query_lower for word in ["programming", "coding", "development", "software"]):
+        return "software_engineering"
+    elif any(word in query_lower for word in ["web", "html", "css", "javascript", "react", "vue"]):
+        return "web_development"
+    elif any(word in query_lower for word in ["mobile", "app", "ios", "android"]):
+        return "mobile_development"
+    else:
+        return "general_tech"
+
 @materials_chat_proto.on_message(ChatMessage)
 async def handle_materials_message(ctx: Context, sender: str, msg: ChatMessage):
     ctx.logger.info(f"Received message from {sender}")
@@ -61,23 +123,35 @@ async def handle_materials_message(ctx: Context, sender: str, msg: ChatMessage):
             welcome_message = create_text_chat("""
 **Welcome to Materials Agent!**
 
-I specialize in discovering and providing educational resources for your learning journey.
+I specialize in discovering and providing educational resources with direct links for any technical domain.
 
 **What I can help you with:**
-• **Resource Discovery** - Educational videos, courses, books, and projects
-• **YouTube Search** - Real-time educational content discovery
+• **Resource Discovery** - Educational videos, courses, books, and projects with links
+• **YouTube Search** - Real-time educational content discovery with detailed info
 • **Learning Materials** - Curated resources for specific topics
 • **Project Suggestions** - Hands-on exercises and practical applications
+• **Link Aggregation** - Direct links to courses, documentation, and tools
 
-**Available Learning Domains:**
+**Supported Learning Domains:**
 • **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
+• **Web3 Development** - Blockchain, smart contracts, DApps, DeFi
 • **Data Science** - Data analysis, statistics, machine learning
+• **Web Development** - Frontend, backend, full-stack, React, Vue, Angular
+• **Mobile Development** - iOS, Android, React Native, Flutter
+• **DevOps** - Docker, Kubernetes, AWS, Azure, GCP
+• **Cybersecurity** - Ethical hacking, penetration testing, network security
+• **Game Development** - Unity, Unreal Engine, game design
+• **UI/UX Design** - User interface, user experience, Figma, Adobe
+• **Cloud Computing** - Serverless, Lambda, Terraform, infrastructure
+• **Database** - SQL, MongoDB, PostgreSQL, Redis
+• **Software Engineering** - Programming, algorithms, data structures
+• **And many more!** - I can find resources for any educational domain
 
 **Try asking me:**
-- "Find machine learning resources"
-- "Get me blockchain tutorials"
-- "Show me data science projects"
+- "Find React development resources"
+- "Get me Python tutorials with videos"
+- "Show me cybersecurity projects"
+- "Find Docker learning materials"
 
 What resources do you need?
             """)
@@ -88,42 +162,43 @@ What resources do you need?
             user_input = item.text.lower()
             
             if any(keyword in user_input for keyword in ["resources", "find", "get me", "show me", "videos", "courses", "books"]):
-                if "machine learning" in user_input or "ml" in user_input:
-                    response = await gemini_service.generate_learning_materials("machine learning", "ai_engineering")
-                elif "deep learning" in user_input or "neural network" in user_input:
-                    response = await gemini_service.generate_learning_materials("deep learning", "ai_engineering")
-                elif "blockchain" in user_input:
-                    response = await gemini_service.generate_learning_materials("blockchain", "web3_development")
-                elif "smart contract" in user_input or "solidity" in user_input:
-                    response = await gemini_service.generate_learning_materials("smart contracts", "web3_development")
-                elif "data analysis" in user_input or "pandas" in user_input:
-                    response = await gemini_service.generate_learning_materials("data analysis", "data_science")
-                elif "statistics" in user_input or "statistical" in user_input:
-                    response = await gemini_service.generate_learning_materials("statistics", "data_science")
-                else:
-                    response = await gemini_service.generate_learning_materials("machine learning", "ai_engineering")
+                topic = _extract_topic_from_query(item.text)
+                domain = _extract_domain_from_query(item.text)
+                response = await gemini_service.generate_learning_materials(topic, domain)
                 
-                # Add YouTube videos to the response
                 if "youtube" in user_input or "videos" in user_input:
-                    topic = user_input.replace("youtube", "").replace("videos", "").strip()
-                    if not topic:
-                        topic = "machine learning tutorial"
-                    videos = await gemini_service.search_youtube_videos(topic, 3)
+                    search_query = topic.replace("_", " ") + " tutorial"
+                    videos = await gemini_service.search_youtube_videos(search_query, 5)
                     if videos:
-                        response += "\n\n**Latest YouTube Videos:**\n"
-                        for video in videos:
-                            response += f"• {video['title']} - {video['channel']}\n"
-                            response += f"  Duration: {video['duration']} | Views: {video['views']}\n"
-                            response += f"  Link: {video['url']}\n\n"
+                        response += "\n\n**🎥 Latest YouTube Learning Resources:**\n"
+                        for i, video in enumerate(videos, 1):
+                            response += f"**{i}. {video['title']}**\n"
+                            response += f"   📺 Channel: {video['channel']}\n"
+                            response += f"   ⏱️ Duration: {video['duration']}\n"
+                            response += f"   👀 Views: {video['views']}\n"
+                            response += f"   🔗 Watch: {video['url']}\n\n"
+                        
+                        response += "**💡 Additional Resources:**\n"
+                        response += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
+                        response += "• **Practice**: https://leetcode.com/, https://www.hackerrank.com/\n"
+                        response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
             elif "youtube videos on" in user_input:
                 query = user_input.replace("youtube videos on", "").strip()
                 videos = await gemini_service.search_youtube_videos(query, 5)
                 if videos:
-                    response = f"**Latest YouTube Videos for '{query.title()}'**\n\n"
-                    for video in videos:
-                        response += f"• {video['title']} - {video['channel']}\n"
-                        response += f"  Duration: {video['duration']} | Views: {video['views']}\n"
-                        response += f"  Link: {video['url']}\n\n"
+                    response = f"**🎥 Latest YouTube Videos for '{query.title()}'**\n\n"
+                    for i, video in enumerate(videos, 1):
+                        response += f"**{i}. {video['title']}**\n"
+                        response += f"   📺 Channel: {video['channel']}\n"
+                        response += f"   ⏱️ Duration: {video['duration']}\n"
+                        response += f"   👀 Views: {video['views']}\n"
+                        response += f"   🔗 Watch: {video['url']}\n\n"
+                    
+                    response += "**💡 Additional Learning Resources:**\n"
+                    response += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
+                    response += "• **Practice Platforms**: https://leetcode.com/, https://www.hackerrank.com/\n"
+                    response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
+                    response += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
                 else:
                     response = f"Sorry, I couldn't find any YouTube videos for '{query.title()}' or the API key is missing."
             elif "help" in user_input or "what can you do" in user_input:
@@ -131,20 +206,32 @@ What resources do you need?
 **I'm your Materials Specialist!**
 
 **My Capabilities:**
-• **Resource Discovery** - Educational videos, courses, books, and projects
-• **YouTube Search** - Real-time educational content discovery
-• **Learning Materials** - Curated resources for specific topics
+• **Resource Discovery** - Educational videos, courses, books, and projects with direct links
+• **YouTube Search** - Real-time educational content discovery with detailed metadata
+• **Learning Materials** - Curated resources for any technical topic
 • **Project Suggestions** - Hands-on exercises and practical applications
+• **Link Aggregation** - Direct links to courses, documentation, and tools
 
-**Available Domains:**
+**Supported Domains:**
 • AI Engineering - Machine learning, deep learning, neural networks
-• Web3 Development - Blockchain, smart contracts, DApps
+• Web3 Development - Blockchain, smart contracts, DApps, DeFi
 • Data Science - Data analysis, statistics, machine learning
+• Web Development - Frontend, backend, full-stack, React, Vue, Angular
+• Mobile Development - iOS, Android, React Native, Flutter
+• DevOps - Docker, Kubernetes, AWS, Azure, GCP
+• Cybersecurity - Ethical hacking, penetration testing, network security
+• Game Development - Unity, Unreal Engine, game design
+• UI/UX Design - User interface, user experience, Figma, Adobe
+• Cloud Computing - Serverless, Lambda, Terraform, infrastructure
+• Database - SQL, MongoDB, PostgreSQL, Redis
+• Software Engineering - Programming, algorithms, data structures
+• And many more! - I can find resources for any educational domain
 
 **Try asking me:**
-- "Find machine learning resources"
-- "Get me blockchain tutorials"
-- "Show me data science projects"
+- "Find React development resources"
+- "Get me Python tutorials with videos"
+- "Show me cybersecurity projects"
+- "Find Docker learning materials"
 
 What resources do you need?
                 """
@@ -195,22 +282,35 @@ async def handle_materials_request(ctx: Context, sender: str, msg: MaterialsRequ
     ctx.logger.info(f"Received materials request from {sender}: {msg.topic} in {msg.domain}")
     
     try:
-        materials = await gemini_service.generate_learning_materials(msg.topic, msg.domain)
+        materials = await gemini_service.generate_learning_materials(msg.topic, msg.domain, msg.user_query)
         youtube_videos = ""
         
         if msg.include_youtube:
-            videos = await gemini_service.search_youtube_videos(f"{msg.topic} {msg.domain} tutorial", 3)
+            videos = await gemini_service.search_youtube_videos(f"{msg.topic} {msg.domain} tutorial", 5)
             if videos:
-                youtube_videos = "\n\n**Latest YouTube Videos:**\n"
-                for video in videos:
-                    youtube_videos += f"• {video['title']} - {video['channel']}\n"
-                    youtube_videos += f"  Duration: {video['duration']} | Views: {video['views']}\n"
-                    youtube_videos += f"  Link: {video['url']}\n\n"
+                youtube_videos = "\n\n**🎥 Latest YouTube Learning Resources:**\n"
+                for i, video in enumerate(videos, 1):
+                    youtube_videos += f"**{i}. {video['title']}**\n"
+                    youtube_videos += f"   📺 Channel: {video['channel']}\n"
+                    youtube_videos += f"   ⏱️ Duration: {video['duration']}\n"
+                    youtube_videos += f"   👀 Views: {video['views']}\n"
+                    youtube_videos += f"   📅 Published: {video['published']}\n"
+                    youtube_videos += f"   🔗 Watch: {video['url']}\n"
+                    if video.get('description'):
+                        youtube_videos += f"   📝 Description: {video['description']}\n"
+                    youtube_videos += "\n"
+                
+                youtube_videos += "**💡 Additional Learning Resources:**\n"
+                youtube_videos += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
+                youtube_videos += "• **Practice Platforms**: https://leetcode.com/, https://www.hackerrank.com/\n"
+                youtube_videos += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
+                youtube_videos += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
         
         await ctx.send(sender, MaterialsResponse(
             materials=materials,
             youtube_videos=youtube_videos,
-            success=True
+            success=True,
+            request_id=msg.request_id
         ))
         ctx.logger.info(f"Sent materials response to {sender}")
     except Exception as e:
@@ -219,7 +319,8 @@ async def handle_materials_request(ctx: Context, sender: str, msg: MaterialsRequ
             materials="",
             youtube_videos="",
             success=False,
-            error=str(e)
+            error=str(e),
+            request_id=msg.request_id
         ))
 
 materials_agent.include(materials_chat_proto, publish_manifest=True)

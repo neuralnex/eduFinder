@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import asyncio
 import json
@@ -61,24 +60,35 @@ async def handle_enhanced_message(ctx: Context, sender: str, msg: ChatMessage):
             welcome_message = create_text_chat("""
 **Welcome to Enhanced Learning Agent!**
 
-I provide deep insights and intelligent analysis using MeTTa Knowledge Graph integration.
+I provide deep insights and intelligent analysis using Gemini AI for any technical domain.
 
 **What makes me special:**
-• **Knowledge Graph Integration** - I understand concept relationships and dependencies
-• **Deep Concept Analysis** - I explain how different topics connect
+• **Deep Concept Analysis** - I explain how different topics connect and relate
 • **Prerequisite Mapping** - I know what you need to learn before tackling advanced topics
 • **Learning Sequence Optimization** - I suggest the best order to learn concepts
 • **Cross-Domain Connections** - I show how concepts relate across different fields
+• **Intelligent Insights** - Powered by Gemini AI for comprehensive understanding
 
-**Available Learning Domains:**
+**Supported Learning Domains:**
 • **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
+• **Web3 Development** - Blockchain, smart contracts, DApps, DeFi
 • **Data Science** - Data analysis, statistics, machine learning
+• **Web Development** - Frontend, backend, full-stack, React, Vue, Angular
+• **Mobile Development** - iOS, Android, React Native, Flutter
+• **DevOps** - Docker, Kubernetes, AWS, Azure, GCP
+• **Cybersecurity** - Ethical hacking, penetration testing, network security
+• **Game Development** - Unity, Unreal Engine, game design
+• **UI/UX Design** - User interface, user experience, Figma, Adobe
+• **Cloud Computing** - Serverless, Lambda, Terraform, infrastructure
+• **Database** - SQL, MongoDB, PostgreSQL, Redis
+• **Software Engineering** - Programming, algorithms, data structures
+• **And many more!** - I can provide insights for any educational domain
 
 **Try asking me:**
-- "Explain deep learning concepts"
-- "How do blockchain and smart contracts relate?"
-- "What should I learn first for AI engineering?"
+- "Explain machine learning concepts"
+- "How do React and Node.js relate?"
+- "What should I learn first for cybersecurity?"
+- "Explain the relationship between Docker and Kubernetes"
 
 What would you like to understand deeply?
             """)
@@ -178,10 +188,11 @@ async def handle_insights_request(ctx: Context, sender: str, msg: InsightsReques
     ctx.logger.info(f"Received insights request from {sender}: {msg.concept} in {msg.domain}")
     
     try:
-        insights = await gemini_service.generate_deep_insights(msg.concept, msg.domain)
+        insights = await gemini_service.generate_deep_insights(msg.concept, msg.domain, msg.user_query)
         await ctx.send(sender, InsightsResponse(
             insights=insights,
-            success=True
+            success=True,
+            request_id=msg.request_id
         ))
         ctx.logger.info(f"Sent insights response to {sender}")
     except Exception as e:
@@ -189,7 +200,8 @@ async def handle_insights_request(ctx: Context, sender: str, msg: InsightsReques
         await ctx.send(sender, InsightsResponse(
             insights="",
             success=False,
-            error=str(e)
+            error=str(e),
+            request_id=msg.request_id
         ))
 
 enhanced_agent.include(enhanced_chat_proto, publish_manifest=True)

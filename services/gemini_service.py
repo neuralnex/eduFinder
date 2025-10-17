@@ -31,21 +31,58 @@ class GeminiLearningService:
         else:
             self.client = None
 
-    async def generate_curriculum(self, domain: str) -> str:
+    async def generate_curriculum(self, domain: str, user_query: str = "") -> str:
         if not self.gemini_available:
             return self._get_fallback_curriculum(domain)
         
         try:
             prompt = f"""
-            Create a comprehensive learning curriculum for {domain}. 
-            Include:
-            1. Overview and prerequisites
-            2. Learning modules with topics and duration
-            3. Difficulty levels
-            4. Estimated completion time
-            5. Next steps for learners
+            User Query: "{user_query}"
+            Domain: {domain}
             
-            Format as a structured learning path with clear progression.
+            Based on the user's specific query, create a comprehensive educational plan that directly addresses what they want to learn.
+            
+            Analyze the user's request and create a personalized learning path that includes:
+            
+            # {domain.replace('_', ' ').title()} Educational Plan
+            
+            ## Overview
+            Brief introduction tailored to the user's specific request and what they will achieve
+            
+            ## Learning Path (Step-by-Step)
+            
+            ### Step 1: [Topic Name]
+            **Duration**: [X weeks/hours]
+            **Difficulty**: [Beginner/Intermediate/Advanced]
+            **What you'll learn**: [Specific skills/concepts relevant to their query]
+            
+            **Learning Resources**:
+            • **Course**: [Course name] - [Direct link]
+            • **Documentation**: [Official docs] - [Link]
+            • **Tutorial**: [Tutorial name] - [Link]
+            • **Practice**: [Practice platform] - [Link]
+            
+            **YouTube Videos**:
+            • [Video title] - [Channel] - [Link]
+            • [Video title] - [Channel] - [Link]
+            
+            **Projects to Build**:
+            • [Project name]: [Description] - [Tutorial link]
+            
+            [Continue for 5-8 steps covering the complete learning journey based on their specific request]
+            
+            ## Prerequisites
+            What learners need to know before starting (tailored to their query)
+            
+            ## Estimated Timeline
+            Total duration and recommended study schedule
+            
+            ## Next Steps
+            How to continue learning after completing this plan
+            
+            Make it practical with real, working links and specific resources.
+            Focus on hands-on learning with projects and practical applications.
+            Tailor everything to directly address the user's specific learning request.
             """
             
             response = self.client.models.generate_content(
@@ -57,24 +94,43 @@ class GeminiLearningService:
             print(f"Gemini curriculum generation failed: {e}")
             return self._get_fallback_curriculum(domain)
 
-    async def generate_learning_materials(self, topic: str, domain: str) -> str:
+    async def generate_learning_materials(self, topic: str, domain: str, user_query: str = "") -> str:
         if not self.gemini_available:
             return self._get_fallback_materials(topic, domain)
-        
+
         try:
             prompt = f"""
-            For learning {topic} in {domain}, provide:
-            1. Recommended learning resources
-            2. Key concepts to focus on
-            3. Practical projects to try
-            4. Study tips and best practices
-            5. Common pitfalls to avoid
+            User Query: "{user_query}"
+            Topic: {topic}
+            Domain: {domain}
             
-            Make it actionable and beginner-friendly.
+            Based on the user's specific request, provide targeted learning resources that directly address what they're looking for.
+            
+            Analyze their query and provide:
+            
+            **Learning Resources for {topic} in {domain.title()}**
+            
+            **Essential Resources** (tailored to their specific request):
+            • **Courses**: [Specific courses relevant to their query] - [Direct links]
+            • **Documentation**: [Official docs] - [Links]
+            • **Tutorials**: [Tutorials that match their needs] - [Links]
+            • **Practice Platforms**: [Relevant practice sites] - [Links]
+            
+            **Recommended Approach** (based on their query):
+            [Personalized learning approach based on what they specifically asked for]
+            
+            **Study Tips** (tailored to their request):
+            [Specific tips relevant to their learning goals]
+            
+            **Next Steps** (based on their specific needs):
+            [What they should do next based on their query]
+            
+            Make it actionable and directly address their specific learning request.
+            Include actual working links and resources that match their query.
             """
             
             response = self.client.models.generate_content(
-                model="gemini-2.5-flash", 
+                model="gemini-2.5-flash",
                 contents=prompt
             )
             return response.text
@@ -82,21 +138,41 @@ class GeminiLearningService:
             print(f"Gemini materials generation failed: {e}")
             return self._get_fallback_materials(topic, domain)
 
-    async def generate_deep_insights(self, concept: str, domain: str) -> str:
+    async def generate_deep_insights(self, concept: str, domain: str, user_query: str = "") -> str:
         if not self.gemini_available:
             return self._get_fallback_insights(concept, domain)
         
         try:
             prompt = f"""
-            Provide deep insights about {concept} in {domain}:
-            1. Core concepts and definitions
-            2. Prerequisites and dependencies
-            3. Related concepts and connections
-            4. Learning progression and order
-            5. Real-world applications
-            6. Advanced topics to explore next
+            User Query: "{user_query}"
+            Concept: {concept}
+            Domain: {domain}
             
-            Make it comprehensive and educational.
+            Based on the user's specific question, provide deep insights that directly address what they want to understand.
+            
+            Analyze their query and provide:
+            
+            **Deep Insights: {concept} in {domain.title()}**
+            
+            **Core Understanding** (tailored to their specific question):
+            [Explain the concept based on what they specifically asked about]
+            
+            **Key Relationships** (relevant to their query):
+            [How this concept relates to other topics based on their specific interest]
+            
+            **Prerequisites** (based on their learning level):
+            [What they need to know first, tailored to their question]
+            
+            **Practical Applications** (relevant to their query):
+            [Real-world examples that match their specific interest]
+            
+            **Common Misconceptions** (related to their question):
+            [Important clarifications based on their specific query]
+            
+            **Next Learning Steps** (based on their specific needs):
+            [What to learn next based on their question]
+            
+            Make it directly relevant to their specific question and learning goals.
             """
             
             response = self.client.models.generate_content(
@@ -119,11 +195,13 @@ class GeminiLearningService:
             video_list = []
             for video in results.get('result', []):
                 video_list.append({
-                    "title": video.get('title'),
-                    "channel": video.get('channel', {}).get('name'),
-                    "duration": video.get('duration'),
-                    "views": video.get('viewCount', {}).get('text'),
-                    "url": video.get('link')
+                    "title": video.get('title', 'Unknown Title'),
+                    "channel": video.get('channel', {}).get('name', 'Unknown Channel'),
+                    "duration": video.get('duration', 'Unknown Duration'),
+                    "views": video.get('viewCount', {}).get('text', 'Unknown Views'),
+                    "url": video.get('link', ''),
+                    "description": video.get('descriptionSnippet', [{}])[0].get('text', '')[:100] + '...' if video.get('descriptionSnippet') else '',
+                    "published": video.get('publishedTime', 'Unknown Date')
                 })
             return video_list
         except Exception as e:
@@ -220,11 +298,17 @@ I can help you find specific resources and videos for each module!
         return f"""
 **Learning Resources for {topic} in {domain.title()}**
 
+**Essential Links:**
+• **Documentation**: https://docs.python.org/ (Python), https://developer.mozilla.org/ (Web)
+• **Tutorials**: https://www.w3schools.com/, https://www.tutorialspoint.com/
+• **Practice**: https://leetcode.com/, https://www.hackerrank.com/
+• **Courses**: https://www.coursera.org/, https://www.edx.org/, https://www.udemy.com/
+
 **Recommended Approach:**
 1. Start with foundational concepts
 2. Practice with hands-on projects
-3. Join online communities
-4. Build a portfolio
+3. Join online communities (Reddit, Stack Overflow, Discord)
+4. Build a portfolio on GitHub
 
 **Study Tips:**
 • Break down complex topics into smaller parts
@@ -269,12 +353,10 @@ if __name__ == "__main__":
         print(f"Gemini Available: {service.gemini_available}")
         print(f"YouTube Available: {service.youtube_available}")
         
-        # Test curriculum generation
         curriculum = await service.generate_curriculum("ai_engineering")
         print("\n--- AI Engineering Curriculum ---")
         print(curriculum)
         
-        # Test YouTube search
         videos = await service.search_youtube_videos("machine learning tutorial", 3)
         print("\n--- YouTube Videos ---")
         for video in videos:
