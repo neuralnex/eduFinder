@@ -1,3 +1,6 @@
+![tag:innovationlab](https://img.shields.io/badge/innovationlab-3D8BD3)
+![tag:hackathon](https://img.shields.io/badge/hackathon-5F43F1)
+
 # 🚀 EduFinder - AI-Powered Learning Path System
 
 **EduFinder** is an intelligent multi-agent system that creates personalized educational plans, discovers targeted learning resources, and provides deep insights for any technical domain. Built with **uAgents** framework and powered by **Gemini AI** and **MeTTa Knowledge Graph**.
@@ -67,7 +70,7 @@
 ### **Installation**
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/eduFinder.git
+git clone https://github.com/neuralnex/eduFinder.git
 cd eduFinder
 
 # Install dependencies
@@ -80,17 +83,37 @@ cp .env.example .env
 
 ### **Environment Variables**
 ```bash
-# Required
-GEMINI_API_KEY=your_gemini_api_key
+# Agent Configuration
+AGENT_SEED=your_main_agent_seed
+AGENT_NAME=LearningPathAgent
+AGENT_DESCRIPTION=An AI agent that creates personalized learning curricula
 
-# Optional
-YOUTUBE_API_KEY=your_youtube_api_key
+# Agent Seeds (for specialized agents)
+CURRICULUM_AGENT_SEED=curriculum
+MATERIALS_AGENT_SEED=materials
+ENHANCED_AGENT_SEED=enhanced
+
+# API Keys
+GEMINI_API_KEY=your_gemini_api_key  # Get from: https://aistudio.google.com/app/apikey
+YOUTUBE_API_KEY=your_youtube_api_key  # Get from: https://console.developers.google.com/apis/credentials
+
+# MeTTa Configuration
+METTA_ENDPOINT=http://localhost:8080
+METTA_SPACE=learning_space
 METTA_USE_MOCK=false
+
+# AgentVerse Configuration
+AGENTVERSE_ENDPOINT=https://agentverse.ai
+FETCH_ENDPOINT=https://fetch.ai
+
+# Debug Settings
+DEBUG=True
+LOG_LEVEL=INFO
 ```
 
 ### **Running the System**
 ```bash
-# Start all agents
+# Start all agents in different terminals
 python3 agents/curriculum_agent.py &
 python3 agents/materials_agent.py &
 python3 agents/enhanced_agent.py &
@@ -182,18 +205,6 @@ Each agent can be extended with new functionality while maintaining the same com
 
 ### **Customizing Responses**
 Modify the Gemini prompts in `services/gemini_service.py` to customize response formats and content.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙏 Acknowledgments
 
