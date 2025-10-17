@@ -61,7 +61,7 @@ logs/
 *.bak
 *.backup
 addy.txt
-*.txt
+
 !README.txt
 
 # Agent specific
@@ -114,3 +114,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+Deployment.md
+DEPLOYMENT.md
