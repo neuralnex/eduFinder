@@ -97,11 +97,24 @@ What would you like to learn about?
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             
-            # Use Gemini to understand and respond to any query
-            response = await gemini_service.generate_curriculum("general", item.text)
-            
-            response_message = create_text_chat(response)
-            await ctx.send(sender, response_message)
+            # Check for greetings and respond naturally
+            greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
+            if any(greeting in item.text.lower() for greeting in greeting_words):
+                greeting_response = """
+Hello! 👋 I'm the Curriculum Agent, your AI-powered learning path creator!
+
+I specialize in creating structured educational curricula for any technical domain. Whether you want to learn Python, React, blockchain development, or any other tech skill, I can break it down into manageable learning steps.
+
+What would you like to learn about? Just tell me your learning goals and I'll create a personalized curriculum for you!
+                """
+                response_message = create_text_chat(greeting_response)
+                await ctx.send(sender, response_message)
+            else:
+                # Use Gemini to understand and respond to any query
+                response = await gemini_service.generate_curriculum("general", item.text)
+                
+                response_message = create_text_chat(response)
+                await ctx.send(sender, response_message)
             
         elif isinstance(item, EndSessionContent):
             ctx.logger.info(f"Session ended with {sender}")

@@ -3,3 +3,9 @@ node_modules/
 build/
 py_cache/
 .env
+
+# Personal Agent README files
+agents/README_CurriculumAgent.md
+agents/README_MaterialsAgent.md
+agents/README_EnhancedAgent.md
+README_MainAgent.md

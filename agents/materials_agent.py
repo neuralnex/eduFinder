@@ -160,35 +160,48 @@ What resources do you need?
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             
-            # Use Gemini to understand and respond to any query
-            topic = _extract_topic_from_query(item.text)
-            domain = _extract_domain_from_query(item.text)
-            response = await gemini_service.generate_learning_materials(topic, domain, item.text)
-            
-            # Always include YouTube videos for better learning experience
-            search_query = topic.replace("_", " ") + " tutorial"
-            videos = await gemini_service.search_youtube_videos(search_query, 5)
-            if videos:
-                response += "\n\n**🎥 Latest YouTube Learning Resources:**\n"
-                for i, video in enumerate(videos, 1):
-                    response += f"**{i}. {video['title']}**\n"
-                    response += f"   📺 Channel: {video['channel']}\n"
-                    response += f"   ⏱️ Duration: {video['duration']}\n"
-                    response += f"   👀 Views: {video['views']}\n"
-                    response += f"   📅 Published: {video['published']}\n"
-                    response += f"   🔗 Watch: {video['url']}\n"
-                    if video.get('description'):
-                        response += f"   📝 Description: {video['description']}\n"
-                    response += "\n"
+            # Check for greetings and respond naturally
+            greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
+            if any(greeting in item.text.lower() for greeting in greeting_words):
+                greeting_response = """
+Hello! 👋 I'm the Materials Agent, your educational resource discovery specialist!
+
+I specialize in finding and providing educational resources with direct links for any technical domain. I can discover YouTube videos, courses, books, documentation, and hands-on projects to help you learn effectively.
+
+What resources do you need? Just tell me what you want to learn and I'll find the best materials for you!
+                """
+                response_message = create_text_chat(greeting_response)
+                await ctx.send(sender, response_message)
+            else:
+                # Use Gemini to understand and respond to any query
+                topic = _extract_topic_from_query(item.text)
+                domain = _extract_domain_from_query(item.text)
+                response = await gemini_service.generate_learning_materials(topic, domain, item.text)
                 
-                response += "**💡 Additional Learning Resources:**\n"
-                response += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
-                response += "• **Practice Platforms**: https://leetcode.com/, https://www.hackerrank.com/\n"
-                response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
-                response += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
-            
-            response_message = create_text_chat(response)
-            await ctx.send(sender, response_message)
+                # Always include YouTube videos for better learning experience
+                search_query = topic.replace("_", " ") + " tutorial"
+                videos = await gemini_service.search_youtube_videos(search_query, 5)
+                if videos:
+                    response += "\n\n**🎥 Latest YouTube Learning Resources:**\n"
+                    for i, video in enumerate(videos, 1):
+                        response += f"**{i}. {video['title']}**\n"
+                        response += f"   📺 Channel: {video['channel']}\n"
+                        response += f"   ⏱️ Duration: {video['duration']}\n"
+                        response += f"   👀 Views: {video['views']}\n"
+                        response += f"   📅 Published: {video['published']}\n"
+                        response += f"   🔗 Watch: {video['url']}\n"
+                        if video.get('description'):
+                            response += f"   📝 Description: {video['description']}\n"
+                        response += "\n"
+                    
+                    response += "**💡 Additional Learning Resources:**\n"
+                    response += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
+                    response += "• **Practice Platforms**: https://leetcode.com/, https://www.hackerrank.com/\n"
+                    response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
+                    response += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
+                
+                response_message = create_text_chat(response)
+                await ctx.send(sender, response_message)
             
         elif isinstance(item, EndSessionContent):
             ctx.logger.info(f"Session ended with {sender}")

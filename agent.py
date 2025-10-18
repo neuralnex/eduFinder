@@ -164,7 +164,25 @@ What would you like to learn today?
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             user_input = item.text.lower()
             
-            if any(keyword in user_input for keyword in ["teach me", "learn", "educational plan", "learning plan", "study plan", "curriculum", "learning path", "create a", "help me learn"]):
+            # Check for greetings and respond naturally
+            greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
+            if any(greeting in user_input for greeting in greeting_words):
+                greeting_response = """
+Hello! 👋 Welcome to EduFinder - Your AI-Powered Learning Companion!
+
+I'm your comprehensive learning assistant that can help you with:
+
+📚 **Curriculum Creation** - Structured learning paths for any tech domain
+🎥 **Resource Discovery** - Educational videos, courses, books, and projects with links  
+🧠 **Deep Insights** - Concept relationships and learning dependencies
+
+I work with specialized AI agents to provide you with personalized educational experiences. Just tell me what you want to learn about, and I'll route your request to the right specialist!
+
+What would you like to learn today?
+                """
+                response_message = create_text_chat(greeting_response)
+                await ctx.send(sender, response_message)
+            elif any(keyword in user_input for keyword in ["teach me", "learn", "educational plan", "learning plan", "study plan", "curriculum", "learning path", "create a", "help me learn"]):
                 topic = _extract_topic_from_query(item.text)
                 domain = _extract_domain_from_query(item.text)
                 

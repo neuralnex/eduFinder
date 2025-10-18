@@ -5,54 +5,142 @@
 
 **EduFinder** is an intelligent multi-agent system that creates personalized educational plans, discovers targeted learning resources, and provides deep insights for any technical domain. Built with **uAgents** framework and powered by **Gemini AI** and **MeTTa Knowledge Graph**.
 
-## ✨ Key Features
+## ✨ Agent Powers & Capabilities
 
-### 🎯 **Smart Query Understanding**
-- **Context-Aware Responses**: Gemini AI analyzes each specific query
-- **Personalized Learning Plans**: Tailored to user's exact needs
-- **Dynamic Domain Support**: Handles any educational or technical domain
-- **Intelligent Routing**: Automatically routes requests to specialized agents
+### 🚀 **Main Routing Agent** - The Intelligent Orchestrator
+**Agent Address**: `agent1q2ygnhcc5xj3davnvu0g0p0qytuyc7dsz8dh538ks49y7sru5t9skwn5gne`
 
-### 📚 **Comprehensive Educational Plans**
-- **Step-by-Step Learning Paths**: Clear progression from beginner to advanced
-- **Integrated Resources**: Direct links to courses, documentation, and tutorials
-- **YouTube Integration**: Real-time educational video discovery
-- **Project-Based Learning**: Hands-on exercises and practical applications
+**🔥 Core Powers:**
+- **🧠 Smart Query Analysis**: Uses Gemini AI to understand user intent and extract learning topics
+- **🎯 Intelligent Routing**: Automatically routes requests to the most appropriate specialized agent
+- **🔄 Request Orchestration**: Manages complex multi-agent workflows with unique request tracking
+- **💬 Natural Greeting Handling**: Responds naturally to greetings and provides comprehensive system overview
+- **🌐 Universal Domain Support**: Handles ANY educational or technical domain dynamically
+- **⚡ Real-time Coordination**: Seamlessly coordinates responses from multiple agents back to users
 
-### 🧠 **Deep Insights & Analysis**
-- **Concept Relationships**: Understand how topics connect and relate
-- **Prerequisite Mapping**: Know what you need to learn first
-- **Learning Dependencies**: Optimal order for mastering concepts
-- **Cross-Domain Connections**: Show relationships across different fields
+**🎯 Routing Intelligence:**
+- **Curriculum Requests**: Detects "teach me", "learn", "curriculum", "learning path" → Routes to Curriculum Agent
+- **Resource Requests**: Detects "resources", "find", "videos", "courses" → Routes to Materials Agent  
+- **Insight Requests**: Detects "explain", "understand", "insights", "analysis" → Routes to Enhanced Agent
+
+---
+
+### 📚 **Curriculum Agent** - The Learning Path Architect
+**Agent Address**: `agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8`
+
+**🔥 Core Powers:**
+- **🏗️ Structured Learning Architecture**: Creates comprehensive, step-by-step learning paths for any domain
+- **🎯 Prerequisite Intelligence**: Automatically identifies what learners need to know first
+- **📈 Difficulty Progression**: Designs optimal progression from beginner to advanced levels
+- **⏱️ Time Management**: Provides realistic time estimates for each learning phase
+- **🎨 Personalized Curricula**: Tailors learning paths to specific user goals and contexts
+- **🔗 Concept Integration**: Shows how different topics connect within a learning domain
+
+**🎯 Specialized Capabilities:**
+- **Domain Expertise**: Handles 15+ technical domains (AI, Web3, Data Science, Web Dev, Mobile, DevOps, etc.)
+- **Learning Module Organization**: Breaks complex subjects into manageable, digestible steps
+- **Learning Sequence Optimization**: Determines the best order for mastering concepts
+- **Practice Integration**: Includes hands-on exercises and project suggestions
+
+---
+
+### 🎥 **Materials Agent** - The Resource Discovery Specialist
+**Agent Address**: `agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf`
+
+**🔥 Core Powers:**
+- **🔍 Real-time Resource Discovery**: Finds the most relevant educational materials instantly
+- **🎥 YouTube Integration**: Discovers educational videos with detailed metadata (duration, views, channel, description)
+- **📚 Multi-format Resources**: Curates courses, books, documentation, tutorials, and hands-on projects
+- **🔗 Direct Link Provision**: Provides clickable links to all discovered resources
+- **⭐ Quality Filtering**: Uses AI to assess and recommend high-quality learning materials
+- **🌐 Global Resource Access**: Searches across multiple platforms and sources
+
+**🎯 Specialized Capabilities:**
+- **Video Metadata Extraction**: Provides detailed information about YouTube videos (channel, duration, views, published date)
+- **Resource Categorization**: Organizes materials by type (courses, tutorials, documentation, practice platforms)
+- **Learning Style Adaptation**: Finds resources that match different learning preferences
+- **Recent Content Discovery**: Prioritizes up-to-date and current educational materials
+
+---
+
+### 🧠 **Enhanced Agent** - The Deep Insights Analyst
+**Agent Address**: `agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4`
+
+**🔥 Core Powers:**
+- **🔬 Deep Concept Analysis**: Provides comprehensive explanations of complex technical concepts
+- **🗺️ Prerequisite Mapping**: Creates detailed maps of what learners need to know before advanced topics
+- **🔗 Cross-Domain Connections**: Reveals how concepts relate across different technical fields
+- **📊 Learning Dependency Analysis**: Shows optimal learning sequences and concept relationships
+- **🎯 Intelligent Insights**: Uses advanced AI to provide nuanced understanding and analysis
+- **🧩 Conceptual Framework Building**: Helps learners build mental models of complex systems
+
+**🎯 Specialized Capabilities:**
+- **Concept Relationship Mapping**: Explains how different topics connect and build upon each other
+- **Learning Sequence Optimization**: Recommends the best order to learn concepts for maximum understanding
+- **Metacognitive Analysis**: Helps learners understand how to learn more effectively
+- **Strategic Learning Guidance**: Provides insights into learning strategies and approaches
 
 ## 🏗️ System Architecture
 
 ### **Multi-Agent Architecture**
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Main Learning Path Agent                  │
-│                     (Port 8000)                             │
-│  • Smart Query Analysis & Routing                           │
-│  • Inter-Agent Communication                               │
-│  • Response Coordination & Forwarding                     │
+│                🚀 Main Routing Agent                        │
+│              The Intelligent Orchestrator                   │
+│                     (Port 8000)                            │
+│  🧠 Smart Query Analysis & Intent Recognition              │
+│  🎯 Intelligent Routing & Request Orchestration           │
+│  🔄 Multi-Agent Coordination & Response Management        │
+│  💬 Natural Greeting Handling & System Overview            │
 └─────────────────────┬───────────────────────────────────────┘
                       │
         ┌─────────────┼─────────────┐
         │             │             │
         ▼             ▼             ▼
 ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-│ Curriculum  │ │ Materials   │ │ Enhanced    │
-│ Agent       │ │ Agent       │ │ Agent       │
-│ (Port 8001) │ │ (Port 8002) │ │ (Port 8003) │
-│             │ │             │ │             │
-│ • Educational│ │ • Resource  │ │ • Deep      │
-│   Plans      │ │   Discovery │ │   Insights  │
-│ • Step-by-   │ │ • YouTube   │ │ • Concept   │
-│   Step       │ │   Videos    │ │   Analysis  │
-│   Resources  │ │ • Courses   │ │ • Learning  │
-│             │ │ • Tutorials │ │   Dependencies│
+│ 📚 Curriculum│ │ 🎥 Materials│ │ 🧠 Enhanced │
+│    Agent     │ │    Agent    │ │    Agent    │
+│ (Port 8001)  │ │ (Port 8002) │ │ (Port 8003) │
+│              │ │             │ │             │
+│ 🏗️ Learning  │ │ 🔍 Resource │ │ 🔬 Deep     │
+│   Path       │ │   Discovery │ │   Insights  │
+│   Architect  │ │   Specialist│ │   Analyst   │
+│              │ │             │ │             │
+│ • Structured │ │ • Real-time │ │ • Concept   │
+│   Learning   │ │   Resource  │ │   Analysis  │
+│   Paths      │ │   Discovery │ │ • Prereq    │
+│ • Prereq     │ │ • YouTube   │ │   Mapping   │
+│   Intelligence│ │   Integration│ │ • Cross-    │
+│ • Difficulty │ │ • Multi-    │ │   Domain    │
+│   Progression│ │   format    │ │   Connections│
+│ • Time       │ │   Resources │ │ • Learning  │
+│   Management │ │ • Quality   │ │   Dependencies│
+│              │ │   Filtering │ │             │
 └─────────────┘ └─────────────┘ └─────────────┘
 ```
+
+## ⚡ Agent Synergy & Power Combinations
+
+### 🔥 **Dynamic Learning Ecosystem**
+The agents work together to create a comprehensive learning experience:
+
+**🎯 Complete Learning Journey:**
+1. **Main Agent** → Analyzes user intent and routes to appropriate specialist
+2. **Curriculum Agent** → Creates structured learning path with prerequisites
+3. **Materials Agent** → Discovers relevant resources and videos for each step
+4. **Enhanced Agent** → Provides deep insights and concept relationships
+
+**🚀 Power Combinations:**
+- **📚 + 🎥**: Curriculum Agent creates learning path → Materials Agent finds resources for each step
+- **🧠 + 📚**: Enhanced Agent explains concepts → Curriculum Agent structures learning sequence
+- **🎥 + 🧠**: Materials Agent finds resources → Enhanced Agent explains how concepts connect
+- **🚀 + All**: Main Agent orchestrates multi-agent workflows for complex learning requests
+
+**💡 Intelligent Workflows:**
+- **"Teach me React"** → Main Agent routes to Curriculum Agent → Creates comprehensive React learning path
+- **"Find Python resources"** → Main Agent routes to Materials Agent → Discovers videos, courses, documentation
+- **"Explain machine learning"** → Main Agent routes to Enhanced Agent → Provides deep conceptual analysis
+- **"Create a cybersecurity curriculum with resources"** → Main Agent coordinates Curriculum + Materials Agents
 
 ### **Technology Stack**
 - **🤖 uAgents Framework**: Autonomous AI agent communication

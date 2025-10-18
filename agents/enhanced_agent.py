@@ -97,11 +97,24 @@ What would you like to understand deeply?
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             
-            # Use Gemini to understand and respond to any query
-            response = await gemini_service.generate_deep_insights("general", "general", item.text)
-            
-            response_message = create_text_chat(response)
-            await ctx.send(sender, response_message)
+            # Check for greetings and respond naturally
+            greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
+            if any(greeting in item.text.lower() for greeting in greeting_words):
+                greeting_response = """
+Hello! 👋 I'm the Enhanced Learning Agent, your AI-powered deep insights specialist!
+
+I specialize in providing deep conceptual analysis and intelligent insights for any technical domain. I can explain how different concepts connect, identify prerequisites, and help you understand the relationships between various topics.
+
+What would you like to understand deeply? I'm here to provide comprehensive insights and analysis!
+                """
+                response_message = create_text_chat(greeting_response)
+                await ctx.send(sender, response_message)
+            else:
+                # Use Gemini to understand and respond to any query
+                response = await gemini_service.generate_deep_insights("general", "general", item.text)
+                
+                response_message = create_text_chat(response)
+                await ctx.send(sender, response_message)
             
         elif isinstance(item, EndSessionContent):
             ctx.logger.info(f"Session ended with {sender}")
