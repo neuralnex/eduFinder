@@ -28,6 +28,9 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
+        <div className="logo-container">
+          <img src="/images/logo.svg" alt="EduFinder Logo" className="logo" />
+        </div>
         <h1>🚀 EduFinder</h1>
         <p className="subtitle">AI-Powered Learning Path System</p>
         <p className="status">{agents?.status}</p>
