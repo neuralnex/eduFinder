@@ -159,98 +159,33 @@ What resources do you need?
             
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text message from {sender}: {item.text}")
-            user_input = item.text.lower()
             
-            if any(keyword in user_input for keyword in ["resources", "find", "get me", "show me", "videos", "courses", "books"]):
-                topic = _extract_topic_from_query(item.text)
-                domain = _extract_domain_from_query(item.text)
-                response = await gemini_service.generate_learning_materials(topic, domain)
+            # Use Gemini to understand and respond to any query
+            topic = _extract_topic_from_query(item.text)
+            domain = _extract_domain_from_query(item.text)
+            response = await gemini_service.generate_learning_materials(topic, domain, item.text)
+            
+            # Always include YouTube videos for better learning experience
+            search_query = topic.replace("_", " ") + " tutorial"
+            videos = await gemini_service.search_youtube_videos(search_query, 5)
+            if videos:
+                response += "\n\n**🎥 Latest YouTube Learning Resources:**\n"
+                for i, video in enumerate(videos, 1):
+                    response += f"**{i}. {video['title']}**\n"
+                    response += f"   📺 Channel: {video['channel']}\n"
+                    response += f"   ⏱️ Duration: {video['duration']}\n"
+                    response += f"   👀 Views: {video['views']}\n"
+                    response += f"   📅 Published: {video['published']}\n"
+                    response += f"   🔗 Watch: {video['url']}\n"
+                    if video.get('description'):
+                        response += f"   📝 Description: {video['description']}\n"
+                    response += "\n"
                 
-                if "youtube" in user_input or "videos" in user_input:
-                    search_query = topic.replace("_", " ") + " tutorial"
-                    videos = await gemini_service.search_youtube_videos(search_query, 5)
-                    if videos:
-                        response += "\n\n**🎥 Latest YouTube Learning Resources:**\n"
-                        for i, video in enumerate(videos, 1):
-                            response += f"**{i}. {video['title']}**\n"
-                            response += f"   📺 Channel: {video['channel']}\n"
-                            response += f"   ⏱️ Duration: {video['duration']}\n"
-                            response += f"   👀 Views: {video['views']}\n"
-                            response += f"   🔗 Watch: {video['url']}\n\n"
-                        
-                        response += "**💡 Additional Resources:**\n"
-                        response += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
-                        response += "• **Practice**: https://leetcode.com/, https://www.hackerrank.com/\n"
-                        response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
-            elif "youtube videos on" in user_input:
-                query = user_input.replace("youtube videos on", "").strip()
-                videos = await gemini_service.search_youtube_videos(query, 5)
-                if videos:
-                    response = f"**🎥 Latest YouTube Videos for '{query.title()}'**\n\n"
-                    for i, video in enumerate(videos, 1):
-                        response += f"**{i}. {video['title']}**\n"
-                        response += f"   📺 Channel: {video['channel']}\n"
-                        response += f"   ⏱️ Duration: {video['duration']}\n"
-                        response += f"   👀 Views: {video['views']}\n"
-                        response += f"   🔗 Watch: {video['url']}\n\n"
-                    
-                    response += "**💡 Additional Learning Resources:**\n"
-                    response += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
-                    response += "• **Practice Platforms**: https://leetcode.com/, https://www.hackerrank.com/\n"
-                    response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
-                    response += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
-                else:
-                    response = f"Sorry, I couldn't find any YouTube videos for '{query.title()}' or the API key is missing."
-            elif "help" in user_input or "what can you do" in user_input:
-                response = """
-**I'm your Materials Specialist!**
-
-**My Capabilities:**
-• **Resource Discovery** - Educational videos, courses, books, and projects with direct links
-• **YouTube Search** - Real-time educational content discovery with detailed metadata
-• **Learning Materials** - Curated resources for any technical topic
-• **Project Suggestions** - Hands-on exercises and practical applications
-• **Link Aggregation** - Direct links to courses, documentation, and tools
-
-**Supported Domains:**
-• AI Engineering - Machine learning, deep learning, neural networks
-• Web3 Development - Blockchain, smart contracts, DApps, DeFi
-• Data Science - Data analysis, statistics, machine learning
-• Web Development - Frontend, backend, full-stack, React, Vue, Angular
-• Mobile Development - iOS, Android, React Native, Flutter
-• DevOps - Docker, Kubernetes, AWS, Azure, GCP
-• Cybersecurity - Ethical hacking, penetration testing, network security
-• Game Development - Unity, Unreal Engine, game design
-• UI/UX Design - User interface, user experience, Figma, Adobe
-• Cloud Computing - Serverless, Lambda, Terraform, infrastructure
-• Database - SQL, MongoDB, PostgreSQL, Redis
-• Software Engineering - Programming, algorithms, data structures
-• And many more! - I can find resources for any educational domain
-
-**Try asking me:**
-- "Find React development resources"
-- "Get me Python tutorials with videos"
-- "Show me cybersecurity projects"
-- "Find Docker learning materials"
-
-What resources do you need?
-                """
-            else:
-                response = f"""
-I understand you're looking for resources about: "{item.text}"
-
-I specialize in finding educational materials for:
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
-• **Data Science** - Data analysis, statistics, machine learning
-
-**How I can help:**
-1. **Find learning resources** - "Find [topic] resources"
-2. **Get specific materials** - "Get me [subject] tutorials"
-3. **Show projects** - "Show me [domain] projects"
-
-What specific resources are you looking for?
-                """
+                response += "**💡 Additional Learning Resources:**\n"
+                response += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
+                response += "• **Practice Platforms**: https://leetcode.com/, https://www.hackerrank.com/\n"
+                response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
+                response += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
             
             response_message = create_text_chat(response)
             await ctx.send(sender, response_message)

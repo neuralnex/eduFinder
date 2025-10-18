@@ -96,55 +96,9 @@ What would you like to learn about?
             
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text message from {sender}: {item.text}")
-            user_input = item.text.lower()
             
-            if any(keyword in user_input for keyword in ["curriculum", "teach me", "learning path", "create a"]):
-                if "ai" in user_input or "artificial intelligence" in user_input or "machine learning" in user_input:
-                    response = await gemini_service.generate_curriculum("ai_engineering")
-                elif "web3" in user_input or "blockchain" in user_input or "smart contract" in user_input:
-                    response = await gemini_service.generate_curriculum("web3_development")
-                elif "data science" in user_input or "data analysis" in user_input or "statistics" in user_input:
-                    response = await gemini_service.generate_curriculum("data_science")
-                else:
-                    response = await gemini_service.generate_curriculum("ai_engineering")
-            elif "help" in user_input or "what can you do" in user_input:
-                response = """
-**I'm your Curriculum Specialist!**
-
-**My Capabilities:**
-• **Curriculum Creation** - Structured learning paths for technical domains
-• **Module Organization** - Break down complex subjects into manageable steps
-• **Prerequisite Mapping** - Show you what you need to learn first
-• **Learning Sequence Planning** - Optimal order for mastering concepts
-
-**Available Domains:**
-• AI Engineering - Machine learning, deep learning, neural networks
-• Web3 Development - Blockchain, smart contracts, DApps
-• Data Science - Data analysis, statistics, machine learning
-
-**Try asking me:**
-- "Teach me AI engineering"
-- "Create a data science curriculum"
-- "What should I learn first for blockchain development?"
-
-What would you like to learn about?
-                """
-            else:
-                response = f"""
-I understand you want to learn about: "{item.text}"
-
-I specialize in creating structured curricula for:
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
-• **Data Science** - Data analysis, statistics, machine learning
-
-**How I can help:**
-1. **Create structured curricula** - "Teach me [domain]"
-2. **Plan learning sequences** - "What should I learn first for [topic]?"
-3. **Organize learning modules** - "Break down [subject] into steps"
-
-What would you like me to help you with?
-                """
+            # Use Gemini to understand and respond to any query
+            response = await gemini_service.generate_curriculum("general", item.text)
             
             response_message = create_text_chat(response)
             await ctx.send(sender, response_message)

@@ -461,11 +461,7 @@ if __name__ == "__main__":
     print(f"Agent Name: {AGENT_NAME}")
     print(f"Agent Description: {AGENT_DESCRIPTION}")
     print(f"Port: 8000")
-    print("\nAgent Seeds Configuration:")
-    print(f"• Main Agent Seed: {AGENT_SEED}")
-    print(f"• Curriculum Agent Seed: {CURRICULUM_AGENT_SEED}")
-    print(f"• Materials Agent Seed: {MATERIALS_AGENT_SEED}")
-    print(f"• Enhanced Agent Seed: {ENHANCED_AGENT_SEED}")
+
     print("\nStarting Learning Path Agent...")
     
     learning_agent.run()

@@ -195,6 +195,22 @@ eduFinder/
 └── README.md               # This file
 ```
 
+## 🔗 AgentVerse Inspection Links
+
+### **Agent Profile URLs**
+Access each agent's profile directly through AgentVerse:
+
+- **Main Agent**: https://agentverse.ai/agents/details/agent1q2ygnhcc5xj3davnvu0g0p0qytuyc7dsz8dh538ks49y7sru5t9skwn5gne/profile
+- **Curriculum Agent**: https://agentverse.ai/agents/details/agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8/profile
+- **Materials Agent**: https://agentverse.ai/agents/details/agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf/profile
+- **Enhanced Agent**: https://agentverse.ai/agents/details/agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4/profile
+
+### **Agent Addresses**
+- **Main Agent**: `agent1q2ygnhcc5xj3davnvu0g0p0qytuyc7dsz8dh538ks49y7sru5t9skwn5gne`
+- **Curriculum Agent**: `agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8`
+- **Materials Agent**: `agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf`
+- **Enhanced Agent**: `agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4`
+
 ## 🛠️ Development
 
 ### **Adding New Learning Domains**

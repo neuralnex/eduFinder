@@ -96,67 +96,9 @@ What would you like to understand deeply?
             
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text message from {sender}: {item.text}")
-            user_input = item.text.lower()
             
-            if any(keyword in user_input for keyword in ["explain", "how does", "what is", "concept", "relationship", "prerequisite"]):
-                if "ai" in user_input or "artificial intelligence" in user_input:
-                    response = await gemini_service.generate_deep_insights("artificial intelligence", "ai_engineering")
-                elif "machine learning" in user_input:
-                    response = await gemini_service.generate_deep_insights("machine learning", "ai_engineering")
-                elif "deep learning" in user_input:
-                    response = await gemini_service.generate_deep_insights("deep learning", "ai_engineering")
-                elif "web3" in user_input or "blockchain" in user_input:
-                    response = await gemini_service.generate_deep_insights("blockchain", "web3_development")
-                elif "smart contract" in user_input:
-                    response = await gemini_service.generate_deep_insights("smart contracts", "web3_development")
-                elif "data science" in user_input or "data analysis" in user_input:
-                    response = await gemini_service.generate_deep_insights("data science", "data_science")
-                elif "statistics" in user_input:
-                    response = await gemini_service.generate_deep_insights("statistics", "data_science")
-                else:
-                    response = await gemini_service.generate_deep_insights("machine learning", "ai_engineering")
-            elif "help" in user_input or "what can you do" in user_input:
-                response = """
-**I'm your Enhanced Learning Specialist!**
-
-**My Special Capabilities:**
-• **Deep Concept Analysis** - I understand how different topics connect and depend on each other
-• **Prerequisite Mapping** - I know what you need to learn before tackling advanced topics
-• **Learning Sequence Optimization** - I suggest the best order to learn concepts
-• **Knowledge Graph Reasoning** - I use structured knowledge to provide intelligent insights
-• **Cross-Domain Connections** - I show how concepts relate across different fields
-
-**What I can help you with:**
-• Explain complex concepts and their relationships
-• Create personalized learning paths based on your goals
-• Identify prerequisites and dependencies
-• Suggest optimal learning sequences
-• Connect concepts across different domains
-
-**Try asking me:**
-- "Explain how machine learning and deep learning relate"
-- "What should I learn before studying neural networks?"
-- "How do blockchain concepts connect?"
-
-What would you like to understand deeply?
-                """
-            else:
-                response = f"""
-I understand you want to understand: "{item.text}"
-
-I provide deep insights and analysis for:
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
-• **Data Science** - Data analysis, statistics, machine learning
-
-**How I can help:**
-1. **Explain concepts deeply** - "Explain [concept]"
-2. **Show relationships** - "How does [topic A] relate to [topic B]?"
-3. **Identify prerequisites** - "What should I learn before [advanced topic]?"
-4. **Optimize learning order** - "What's the best way to learn [domain]?"
-
-What would you like me to analyze for you?
-                """
+            # Use Gemini to understand and respond to any query
+            response = await gemini_service.generate_deep_insights("general", "general", item.text)
             
             response_message = create_text_chat(response)
             await ctx.send(sender, response_message)
