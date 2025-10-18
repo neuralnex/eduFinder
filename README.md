@@ -164,6 +164,8 @@ cd eduFinder
 # Install dependencies
 pip install -r requirements.txt
 
+pip install hyperon
+
 # Set up environment variables
 cp .env.example .env
 # Edit .env with your API keys
@@ -197,6 +199,18 @@ FETCH_ENDPOINT=https://fetch.ai
 # Debug Settings
 DEBUG=True
 LOG_LEVEL=INFO
+```
+
+### **Testing MeTTa Integration**
+```bash
+# Test MeTTa integration
+python test_metta_integration.py
+
+# Install hyperon for real MeTTa (optional)
+pip install hyperon
+
+# Set environment variable to use real MeTTa
+export METTA_USE_MOCK=false
 ```
 
 ### **Running the System**
@@ -248,10 +262,11 @@ Response: Deep dive into algorithm mechanics, mathematics, optimization,
 ## 🔧 Advanced Features
 
 ### **MeTTa Knowledge Graph Integration**
-- **Automatic Detection**: Uses real MeTTa when hyperon is installed
-- **Graceful Fallback**: Works with mock data when hyperon unavailable
-- **Structured Learning**: Concept relationships and learning dependencies
-- **Prerequisite Mapping**: Optimal learning sequence recommendations
+- **Real Integration**: MeTTa knowledge graph queries integrated into Gemini service when hyperon is available
+- **Pure Gemini Fallback**: Uses pure Gemini AI when hyperon is not installed
+- **Enhanced Curriculum**: Prerequisites and learning paths from knowledge graph when available
+- **Deep Insights**: Concept relationships and dependencies from MeTTa when available
+- **Smart Detection**: Automatically detects hyperon availability and adjusts behavior
 
 ### **Smart Query Processing**
 - **Intent Recognition**: Automatically detects user learning goals
@@ -279,6 +294,7 @@ eduFinder/
 ├── config.py                # Configuration management
 ├── models.py                # Data models for inter-agent communication
 ├── agent.py                 # Main routing agent
+├── test_metta_integration.py # MeTTa integration test script
 ├── requirements.txt         # Python dependencies
 └── README.md               # This file
 ```
