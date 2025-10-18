@@ -21,7 +21,6 @@ def start_agent(agent_file, delay=0):
         print(f"Failed to start {agent_file}: {e}")
 
 def start_all_agents():
-    """Start all EduFinder agents"""
     print("Starting EduFinder Multi-Agent System...")
     
     agents = [
@@ -41,39 +40,72 @@ def start_all_agents():
     return processes
 
 def application(environ, start_response):
-    """WSGI application for gunicorn"""
-    # Start agents if not already running
     if not hasattr(application, 'agents_started'):
         application.processes = start_all_agents()
         application.agents_started = True
     
-    # Simple health check endpoint
-    status = '200 OK'
-    headers = [('Content-type', 'application/json')]
+    path = environ.get('PATH_INFO', '/')
     
-    response = {
-        "status": "EduFinder Multi-Agent System Running",
-        "agents": {
-            "main_agent": "agent1q2ygnhcc5xj3davnvu0g0p0qytuyc7dsz8dh538ks49y7sru5t9skwn5gne",
-            "curriculum_agent": "agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8",
-            "materials_agent": "agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf",
-            "enhanced_agent": "agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4"
-        },
-        "ports": {
-            "main_agent": 8000,
-            "curriculum_agent": 8001,
-            "materials_agent": 8002,
-            "enhanced_agent": 8003
-        },
-    }
+    if path == '/' or path == '':
+        status = '200 OK'
+        headers = [('Content-type', 'application/json')]
+        
+        response = {
+            "status": "EduFinder Multi-Agent System Running",
+            "message": "Welcome to EduFinder! Your AI-powered learning companion.",
+            "agents": {
+                "main_agent": "agent1q2ygnhcc5xj3davnvu0g0p0qytuyc7dsz8dh538ks49y7sru5t9skwn5gne",
+                "curriculum_agent": "agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8",
+                "materials_agent": "agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf",
+                "enhanced_agent": "agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4"
+            },
+            "ports": {
+                "main_agent": 8000,
+                "curriculum_agent": 8001,
+                "materials_agent": 8002,
+                "enhanced_agent": 8003
+            },
+            "profile_links": {
+                "main_agent": "https://agentverse.ai/agents/details/agent1q2ygnhcc5xj3davnvu0g0p0qytuyc7dsz8dh538ks49y7sru5t9skwn5gne/profile",
+                "curriculum_agent": "https://agentverse.ai/agents/details/agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8/profile",
+                "materials_agent": "https://agentverse.ai/agents/details/agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf/profile",
+                "enhanced_agent": "https://agentverse.ai/agents/details/agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4/profile"
+            }
+        }
+        
+        response_body = json.dumps(response, indent=2)
+        start_response(status, headers)
+        return [response_body.encode()]
     
-    response_body = json.dumps(response, indent=2)
+    elif path == '/health':
+        status = '200 OK'
+        headers = [('Content-type', 'application/json')]
+        
+        response = {
+            "status": "healthy",
+            "agents_running": True,
+            "timestamp": time.time()
+        }
+        
+        response_body = json.dumps(response, indent=2)
+        start_response(status, headers)
+        return [response_body.encode()]
     
-    start_response(status, headers)
-    return [response_body.encode()]
+    else:
+        status = '404 Not Found'
+        headers = [('Content-type', 'application/json')]
+        
+        response = {
+            "error": "Not Found",
+            "message": "The requested endpoint does not exist",
+            "available_endpoints": ["/", "/health"]
+        }
+        
+        response_body = json.dumps(response, indent=2)
+        start_response(status, headers)
+        return [response_body.encode()]
 
 def main():
-    """Main function for direct execution"""
     processes = start_all_agents()
     print("Press Ctrl+C to exit launcher")
     
