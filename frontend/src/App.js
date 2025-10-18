@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import './App.css';
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('all');
   const agents = {
     status: "EduFinder Multi-Agent System Running",
     message: "Welcome to EduFinder! Your AI-powered learning companion.",
@@ -11,12 +13,6 @@ function App() {
       materials_agent: "agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf",
       enhanced_agent: "agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4"
     },
-    ports: {
-      main_agent: 8000,
-      curriculum_agent: 8001,
-      materials_agent: 8002,
-      enhanced_agent: 8003
-    },
     profile_links: {
       main_agent: "https://agentverse.ai/agents/details/agent1q2ygnhcc5xj3davnvu0g0p0qytuyc7dsz8dh538ks49y7sru5t9skwn5gne/profile",
       curriculum_agent: "https://agentverse.ai/agents/details/agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8/profile",
@@ -25,23 +21,99 @@ function App() {
     }
   };
 
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Agent address copied to clipboard!');
+    });
+  };
+
+  const filteredAgents = useMemo(() => {
+    const agentEntries = Object.entries(agents.agents);
+    
+    return agentEntries.filter(([key, address]) => {
+      const agentName = key.replace('_', ' ').toLowerCase();
+      const matchesSearch = agentName.includes(searchTerm.toLowerCase()) || 
+                           address.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesFilter = filterType === 'all' || 
+                           (filterType === 'learning' && key === 'main_agent') ||
+                           (filterType === 'curriculum' && key === 'curriculum_agent') ||
+                           (filterType === 'materials' && key === 'materials_agent') ||
+                           (filterType === 'insights' && key === 'enhanced_agent');
+      
+      return matchesSearch && matchesFilter;
+    });
+  }, [searchTerm, filterType, agents.agents]);
+
   return (
     <div className="app">
       <header className="app-header">
-        <div className="logo-container">
-          <img src="/images/logo.svg" alt="EduFinder Logo" className="logo" />
+        <div className="header-content">
+          <div className="logo-section">
+            <img src="/images/logo.svg" alt="EduFinder Logo" className="logo" />
+          </div>
+          <div className="header-text">
+            <h1>🚀 EduFinder</h1>
+            <p className="elevator-pitch">
+              Transform your learning journey with AI-powered educational agents. 
+              Get personalized curricula, discover resources, and gain deep insights 
+              across any technical domain - all powered by cutting-edge AI technology.
+            </p>
+          </div>
+          <div className="header-actions">
+            <a 
+              href="http://asi1.ai/chat" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="chat-link"
+            >
+              💬 ASI1 Chat
+            </a>
+          </div>
         </div>
-        <h1>🚀 EduFinder</h1>
-        <p className="subtitle">AI-Powered Learning Path System</p>
-        <p className="status">{agents?.status}</p>
-        <p className="message">{agents?.message}</p>
       </header>
 
       <main className="app-main">
+        <section className="search-section">
+          <div className="search-container">
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="Search agents by name or address..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+              />
+              <span className="search-icon">🔍</span>
+            </div>
+            
+            <div className="filter-container">
+              <label className="filter-label">Filter by type:</label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="filter-select"
+              >
+                <option value="all">All Agents</option>
+                <option value="learning">Learning Path</option>
+                <option value="curriculum">Curriculum</option>
+                <option value="materials">Materials</option>
+                <option value="insights">Insights</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="search-results">
+            <p className="results-count">
+              Showing {filteredAgents.length} of {Object.keys(agents.agents).length} agents
+            </p>
+          </div>
+        </section>
+
         <section className="agents-section">
           <h2>🤖 Active Agents</h2>
           <div className="agents-grid">
-            {agents?.agents && Object.entries(agents.agents).map(([key, address]) => {
+            {filteredAgents.map(([key, address]) => {
               const imageMap = {
                 'main_agent': 'learningpath.jpeg',
                 'curriculum_agent': 'curriculum.jpeg',
@@ -64,7 +136,39 @@ function App() {
                     />
                   </a>
                   <h3>{key.replace('_', ' ').toUpperCase()}</h3>
-                  <p className="address">{address}</p>
+                  
+                  <div className="agent-description">
+                    {key === 'main_agent' && (
+                      <p>Main routing agent that coordinates all learning requests and provides intelligent query analysis.</p>
+                    )}
+                    {key === 'curriculum_agent' && (
+                      <p>Creates structured learning paths and educational curricula tailored to your specific goals and skill level.</p>
+                    )}
+                    {key === 'materials_agent' && (
+                      <p>Discovers and curates learning resources including videos, courses, documentation, and hands-on projects.</p>
+                    )}
+                    {key === 'enhanced_agent' && (
+                      <p>Provides deep insights, concept analysis, and learning dependencies to accelerate your understanding.</p>
+                    )}
+                  </div>
+                  
+                  <div className="agent-features">
+                    <div className="feature-tag">🤖 AI-Powered</div>
+                    <div className="feature-tag">🔗 AgentVerse</div>
+                    <div className="feature-tag">⚡ Real-time</div>
+                  </div>
+                  
+                  <div className="address-container">
+                    <p className="address">{address}</p>
+                    <button 
+                      onClick={() => copyToClipboard(address)}
+                      className="copy-btn"
+                      title="Copy address"
+                    >
+                      📋
+                    </button>
+                  </div>
+                  
                   <a 
                     href={agents.profile_links[key]} 
                     target="_blank" 
@@ -76,18 +180,6 @@ function App() {
                 </div>
               );
             })}
-          </div>
-        </section>
-
-        <section className="ports-section">
-          <h2>🔌 Agent Ports</h2>
-          <div className="ports-grid">
-            {agents?.ports && Object.entries(agents.ports).map(([key, port]) => (
-              <div key={key} className="port-card">
-                <h3>{key.replace('_', ' ').toUpperCase()}</h3>
-                <p className="port">Port: {port}</p>
-              </div>
-            ))}
           </div>
         </section>
 
