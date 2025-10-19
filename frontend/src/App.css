@@ -42,7 +42,7 @@ body {
 }
 
 .logo {
-  height: 40px;
+  height: 60px;
   width: auto;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
   transition: transform 0.3s ease;
@@ -562,7 +562,7 @@ body {
   }
   
   .logo {
-    height: 32px;
+    height: 48px;
   }
   
   .header-actions {
