@@ -4,8 +4,16 @@ build/
 py_cache/
 .env
 
+# Test files
+test_*.py
+*_test.py
+tests/
+
+test_metta_integration.py
+
 # Personal Agent README files
 agents/README_CurriculumAgent.md
 agents/README_MaterialsAgent.md
 agents/README_EnhancedAgent.md
 README_MainAgent.md
+__pycache__/

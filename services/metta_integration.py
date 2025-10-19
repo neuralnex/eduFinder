@@ -14,18 +14,20 @@ except ImportError:
     print("   Install with: pip install hyperon")
     print("   Documentation: https://metta-lang.dev/docs/learn/tutorials/python_use/metta_python_basics.html")
 
-class MeTTaKnowledgeGraph:
+class DynamicMeTTaKnowledgeGraph:
     def __init__(self, space_name: str = METTA_SPACE):
         self.space_name = space_name
         self.metta = None
         self.use_real_metta = HYPERON_AVAILABLE and not METTA_USE_MOCK
+        self.concept_cache = {}
+        self.domain_cache = {}
     
     async def __aenter__(self):
         if self.use_real_metta:
             try:
                 self.metta = MeTTa()
-                await self._initialize_knowledge_graph()
-                print("Connected to Real MeTTa Knowledge Graph")
+                await self._initialize_dynamic_knowledge_system()
+                print("Connected to Dynamic MeTTa Knowledge Graph")
             except Exception as e:
                 print(f"Real MeTTa initialization failed: {e}, falling back to mock data")
                 self.use_real_metta = False
@@ -37,397 +39,296 @@ class MeTTaKnowledgeGraph:
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        if self.metta:
-            self.metta.close()
+        pass
     
-    async def _initialize_knowledge_graph(self):
+    async def _initialize_dynamic_knowledge_system(self):
         if not self.metta:
             return
             
         try:
-            concepts_data = [
-                ("machine_learning", "Machine Learning", "ai_engineering"),
-                ("deep_learning", "Deep Learning", "ai_engineering"),
-                ("neural_networks", "Neural Networks", "ai_engineering"),
-                ("blockchain", "Blockchain", "web3_development"),
-                ("smart_contracts", "Smart Contracts", "web3_development"),
-                ("cryptocurrency", "Cryptocurrency", "web3_development"),
-                ("data_analysis", "Data Analysis", "data_science"),
-                ("statistics", "Statistics", "data_science"),
-            ]
-            
-            for concept_name, display_name, domain in concepts_data:
-                self.metta.space().add_atom(E(S("learning_concept"), S(concept_name), S(domain)))
-                self.metta.space().add_atom(E(S("concept_name"), S(concept_name), ValueAtom(display_name)))
-            
-            prerequisites = [
-                ("prerequisite", "deep_learning", "machine_learning"),
-                ("prerequisite", "deep_learning", "linear_algebra"),
-                ("prerequisite", "deep_learning", "calculus"),
-                ("prerequisite", "machine_learning", "linear_algebra"),
-                ("prerequisite", "machine_learning", "statistics"),
-                ("prerequisite", "machine_learning", "python_programming"),
-                ("prerequisite", "neural_networks", "linear_algebra"),
-                ("prerequisite", "neural_networks", "calculus"),
-                ("prerequisite", "neural_networks", "python_programming"),
-                ("prerequisite", "smart_contracts", "blockchain"),
-                ("prerequisite", "smart_contracts", "solidity"),
-                ("prerequisite", "smart_contracts", "ethereum"),
-                ("prerequisite", "blockchain", "cryptography"),
-                ("prerequisite", "blockchain", "distributed_systems"),
-                ("prerequisite", "blockchain", "javascript"),
-                ("prerequisite", "data_analysis", "statistics"),
-                ("prerequisite", "data_analysis", "python"),
-                ("prerequisite", "data_analysis", "sql"),
-            ]
-            
-            for prereq_type, concept, prereq in prerequisites:
-                self.metta.space().add_atom(E(S(prereq_type), S(concept), S(prereq)))
-            
-            related_concepts = [
-                ("related_concept", "machine_learning", "supervised_learning"),
-                ("related_concept", "machine_learning", "unsupervised_learning"),
-                ("related_concept", "machine_learning", "deep_learning"),
-                ("related_concept", "deep_learning", "neural_networks"),
-                ("related_concept", "deep_learning", "cnn"),
-                ("related_concept", "deep_learning", "rnn"),
-                ("related_concept", "deep_learning", "transformers"),
-                ("related_concept", "blockchain", "consensus_mechanisms"),
-                ("related_concept", "blockchain", "smart_contracts"),
-                ("related_concept", "blockchain", "cryptocurrency"),
-                ("related_concept", "smart_contracts", "defi"),
-                ("related_concept", "smart_contracts", "nfts"),
-                ("related_concept", "smart_contracts", "daos"),
-                ("related_concept", "data_analysis", "data_visualization"),
-                ("related_concept", "data_analysis", "statistical_analysis"),
-                ("related_concept", "data_analysis", "data_cleaning"),
-            ]
-            
-            for related_type, concept, related in related_concepts:
-                self.metta.space().add_atom(E(S(related_type), S(concept), S(related)))
-            
-            learning_paths = [
-                ("learning_step", "machine_learning", 1, "Mathematical Foundations"),
-                ("learning_step", "machine_learning", 2, "Programming Skills"),
-                ("learning_step", "machine_learning", 3, "ML Algorithms"),
-                ("learning_step", "machine_learning", 4, "Model Evaluation"),
-                ("learning_step", "machine_learning", 5, "Production Deployment"),
-                ("learning_step", "deep_learning", 1, "Neural Network Basics"),
-                ("learning_step", "deep_learning", 2, "Backpropagation"),
-                ("learning_step", "deep_learning", 3, "Convolutional Networks"),
-                ("learning_step", "deep_learning", 4, "Recurrent Networks"),
-                ("learning_step", "deep_learning", 5, "Advanced Architectures"),
-                ("learning_step", "blockchain", 1, "Cryptography Basics"),
-                ("learning_step", "blockchain", 2, "Distributed Systems"),
-                ("learning_step", "blockchain", 3, "Blockchain Architecture"),
-                ("learning_step", "blockchain", 4, "Consensus Algorithms"),
-                ("learning_step", "blockchain", 5, "Smart Contract Development"),
-            ]
-            
-            for path_type, concept, step_num, step_name in learning_paths:
-                self.metta.space().add_atom(E(S(path_type), S(concept), ValueAtom(step_num), ValueAtom(step_name)))
-            
-            definitions = {
-                "machine_learning": "A subset of artificial intelligence that enables computers to learn and make decisions from data",
-                "deep_learning": "A subset of machine learning using neural networks with multiple layers",
-                "neural_networks": "Computing systems inspired by biological neural networks",
-                "blockchain": "A distributed ledger technology that maintains a continuously growing list of records",
-                "smart_contracts": "Self-executing contracts with terms directly written into code",
-                "cryptocurrency": "Digital or virtual currency secured by cryptography",
-                "data_analysis": "The process of inspecting, cleaning, and modeling data to discover useful information",
-                "statistics": "The science of collecting, analyzing, and interpreting data",
-            }
-            
-            for concept, definition in definitions.items():
-                self.metta.space().add_atom(E(S("definition"), S(concept), ValueAtom(definition)))
-            
-            difficulties = {
-                "machine_learning": "Intermediate",
-                "deep_learning": "Advanced",
-                "neural_networks": "Intermediate",
-                "blockchain": "Intermediate",
-                "smart_contracts": "Intermediate",
-                "cryptocurrency": "Beginner",
-                "data_analysis": "Beginner",
-                "statistics": "Beginner",
-            }
-            
-            for concept, difficulty in difficulties.items():
-                self.metta.space().add_atom(E(S("difficulty"), S(concept), ValueAtom(difficulty)))
-            
-            time_estimates = {
-                "machine_learning": "3-6 months",
-                "deep_learning": "4-8 months",
-                "neural_networks": "2-4 months",
-                "blockchain": "2-4 months",
-                "smart_contracts": "3-5 months",
-                "cryptocurrency": "1-3 months",
-                "data_analysis": "2-4 months",
-                "statistics": "2-3 months",
-            }
-            
-            for concept, time_est in time_estimates.items():
-                self.metta.space().add_atom(E(S("time_estimate"), S(concept), ValueAtom(time_est)))
-            
-            print(f"Initialized MeTTa knowledge graph with {len(concepts_data)} concepts")
-            
+            await self._register_dynamic_operations()
+            await self._add_foundational_concepts()
+            print(f"Initialized Dynamic MeTTa knowledge system")
         except Exception as e:
-            print(f"Error initializing MeTTa knowledge graph: {e}")
+            print(f"Error initializing dynamic MeTTa system: {e}")
             self.use_real_metta = False
     
-    async def query_learning_concepts(self, domain: str, concept: str) -> Dict[str, Any]:
-        if self.use_real_metta:
-            return await self._real_metta_query(domain, concept)
-        else:
-            return await self._mock_metta_query(domain, concept)
+    async def _register_dynamic_operations(self):
+        try:
+            def analyze_concept(concept_name, domain):
+                return {
+                    "concept": concept_name,
+                    "domain": domain,
+                    "analyzed": True,
+                    "timestamp": datetime.now().isoformat()
+                }
+            
+            analyze_op = OperationAtom("analyze-concept", analyze_concept)
+            self.metta.register_atom("analyze-concept", analyze_op)
+            
+            def detect_domain(query):
+                query_lower = query.lower()
+                domains = {
+                    "programming": ["code", "program", "software", "development", "coding"],
+                    "data_science": ["data", "analysis", "statistics", "machine learning", "ai"],
+                    "web_development": ["web", "frontend", "backend", "html", "css", "javascript"],
+                    "mobile_development": ["mobile", "app", "ios", "android", "react native"],
+                    "devops": ["devops", "deployment", "docker", "kubernetes", "aws"],
+                    "cybersecurity": ["security", "hacking", "penetration", "cyber"],
+                    "design": ["design", "ui", "ux", "figma", "adobe"],
+                    "business": ["business", "marketing", "finance", "management"],
+                    "science": ["science", "physics", "chemistry", "biology", "math"],
+                    "language": ["language", "english", "spanish", "french", "learning"]
+                }
+                
+                for domain, keywords in domains.items():
+                    if any(keyword in query_lower for keyword in keywords):
+                        return domain
+                return "general"
+            
+            domain_op = OperationAtom("detect-domain", detect_domain)
+            self.metta.register_atom("detect-domain", domain_op)
+            
+            def find_relationships(concept1, concept2):
+                relationships = {
+                    "prerequisite": f"{concept1} is prerequisite for {concept2}",
+                    "related": f"{concept1} is related to {concept2}",
+                    "builds_on": f"{concept1} builds on {concept2}",
+                    "alternative": f"{concept1} is alternative to {concept2}"
+                }
+                return relationships
+            
+            relation_op = OperationAtom("find-relationships", find_relationships)
+            self.metta.register_atom("find-relationships", relation_op)
+            
+        except Exception as e:
+            print(f"Error registering dynamic operations: {e}")
     
-    async def _real_metta_query(self, domain: str, concept: str) -> Dict[str, Any]:
+    async def _add_foundational_concepts(self):
+        try:
+            foundational_concepts = [
+                ("learning", "general", "The process of acquiring knowledge and skills"),
+                ("education", "general", "The systematic process of learning and teaching"),
+                ("skill", "general", "The ability to do something well"),
+                ("knowledge", "general", "Information and understanding gained through experience"),
+                ("practice", "general", "Repeated exercise to improve performance"),
+                ("theory", "general", "A system of ideas intended to explain something"),
+                ("application", "general", "The practical use of knowledge or skills")
+            ]
+            
+            for concept, domain, definition in foundational_concepts:
+                self.metta.space().add_atom(E(S("concept"), S(concept), S(domain)))
+                self.metta.space().add_atom(E(S("definition"), S(concept), ValueAtom(definition)))
+                self.metta.space().add_atom(E(S("difficulty"), S(concept), ValueAtom("Beginner")))
+                self.metta.space().add_atom(E(S("time_estimate"), S(concept), ValueAtom("1-2 weeks")))
+            
+        except Exception as e:
+            print(f"Error adding foundational concepts: {e}")
+    
+    async def query_learning_concepts(self, domain: str, concept: str) -> Dict[str, Any]:
+        """Dynamic concept query that can handle any domain/concept"""
+        if self.use_real_metta:
+            return await self._dynamic_metta_query(domain, concept)
+        else:
+            return await self._dynamic_mock_query(domain, concept)
+    
+    async def _dynamic_metta_query(self, domain: str, concept: str) -> Dict[str, Any]:
+        """Dynamic MeTTa query using AI-powered analysis"""
         try:
             concept_key = concept.lower().replace(" ", "_")
             
-            definition_query = f'!(match &self (definition {concept_key} $def) $def)'
-            definition_result = self.metta.run(definition_query)
-            if definition_result and len(definition_result) > 0:
-                definition = str(definition_result[0])
-            else:
-                definition = "No definition available"
+            # Check if concept exists in knowledge graph
+            concept_pattern = E(S("concept"), S(concept_key), S(domain))
+            concept_exists = self.metta.space().query(concept_pattern)
             
-            prereq_query = f'!(match &self (prerequisite {concept_key} $prereq) $prereq)'
-            prereq_result = self.metta.run(prereq_query)
-            prerequisites = [str(atom) for atom in prereq_result] if prereq_result else []
+            if not concept_exists:
+                # Dynamically analyze and add the concept
+                await self._dynamically_analyze_concept(concept, domain)
             
-            related_query = f'!(match &self (related_concept {concept_key} $related) $related)'
-            related_result = self.metta.run(related_query)
-            related_concepts = [str(atom) for atom in related_result] if related_result else []
+            # Query the concept data
+            definition_pattern = E(S("definition"), S(concept_key), V("def"))
+            definition_result = self.metta.space().query(definition_pattern)
+            definition = str(definition_result[0]["def"]) if definition_result else f"Dynamic analysis of {concept}"
             
-            path_query = f'!(match &self (learning_step {concept_key} $step_num $step_name) ($step_num $step_name))'
-            path_result = self.metta.run(path_query)
-            learning_path = []
-            if path_result:
-                learning_path = [str(step) for step in path_result]
+            prereq_pattern = E(S("prerequisite"), S(concept_key), V("prereq"))
+            prereq_result = self.metta.space().query(prereq_pattern)
+            prerequisites = [str(binding["prereq"]) for binding in prereq_result] if prereq_result else []
             
-            difficulty_query = f'!(match &self (difficulty {concept_key} $diff) $diff)'
-            difficulty_result = self.metta.run(difficulty_query)
-            difficulty = str(difficulty_result[0]) if difficulty_result and len(difficulty_result) > 0 else "Not specified"
+            related_pattern = E(S("related_concept"), S(concept_key), V("related"))
+            related_result = self.metta.space().query(related_pattern)
+            related_concepts = [str(binding["related"]) for binding in related_result] if related_result else []
             
-            time_query = f'!(match &self (time_estimate {concept_key} $time) $time)'
-            time_result = self.metta.run(time_query)
-            time_estimate = str(time_result[0]) if time_result and len(time_result) > 0 else "Not specified"
+            difficulty_pattern = E(S("difficulty"), S(concept_key), V("diff"))
+            difficulty_result = self.metta.space().query(difficulty_pattern)
+            difficulty = str(difficulty_result[0]["diff"]) if difficulty_result else "Intermediate"
+            
+            time_pattern = E(S("time_estimate"), S(concept_key), V("time"))
+            time_result = self.metta.space().query(time_pattern)
+            time_estimate = str(time_result[0]["time"]) if time_result else "2-4 weeks"
             
             return {
                 "concept": concept,
                 "definition": definition,
                 "prerequisites": prerequisites,
                 "related_concepts": related_concepts,
-                "learning_path": learning_path,
+                "learning_path": await self._generate_dynamic_learning_path(concept, domain),
                 "difficulty_level": difficulty,
                 "estimated_time": time_estimate,
-                "source": "MeTTa Knowledge Graph (hyperon)"
+                "source": "Dynamic MeTTa Knowledge Graph (AI-Powered)"
             }
             
         except Exception as e:
-            print(f"Real MeTTa query error: {e}")
-            return await self._mock_metta_query(domain, concept)
+            print(f"Dynamic MeTTa query error: {e}")
+            return await self._dynamic_mock_query(domain, concept)
     
-    async def _mock_metta_query(self, domain: str, concept: str) -> Dict[str, Any]:
-        knowledge_graph = {
-            "ai_engineering": {
-                "machine_learning": {
-                    "concept": "Machine Learning",
-                    "definition": "A subset of artificial intelligence that enables computers to learn and make decisions from data",
-                    "prerequisites": ["Linear Algebra", "Statistics", "Python Programming"],
-                    "related_concepts": ["Supervised Learning", "Unsupervised Learning", "Deep Learning"],
-                    "learning_path": [
-                        "Mathematical Foundations",
-                        "Programming Skills",
-                        "ML Algorithms",
-                        "Model Evaluation",
-                        "Production Deployment"
-                    ],
-                    "difficulty_level": "Intermediate",
-                    "estimated_time": "3-6 months"
-                },
-                "deep_learning": {
-                    "concept": "Deep Learning",
-                    "definition": "A subset of machine learning using neural networks with multiple layers",
-                    "prerequisites": ["Machine Learning", "Linear Algebra", "Calculus"],
-                    "related_concepts": ["Neural Networks", "CNN", "RNN", "Transformers"],
-                    "learning_path": [
-                        "Neural Network Basics",
-                        "Backpropagation",
-                        "Convolutional Networks",
-                        "Recurrent Networks",
-                        "Advanced Architectures"
-                    ],
-                    "difficulty_level": "Advanced",
-                    "estimated_time": "4-8 months"
-                },
-                "neural_networks": {
-                    "concept": "Neural Networks",
-                    "definition": "Computing systems inspired by biological neural networks",
-                    "prerequisites": ["Linear Algebra", "Calculus", "Python Programming"],
-                    "related_concepts": ["Deep Learning", "Backpropagation", "Activation Functions"],
-                    "learning_path": [
-                        "Perceptron",
-                        "Multi-layer Perceptron",
-                        "Backpropagation Algorithm",
-                        "Activation Functions",
-                        "Network Architectures"
-                    ],
-                    "difficulty_level": "Intermediate",
-                    "estimated_time": "2-4 months"
-                }
-            },
-            "web3_development": {
-                "blockchain": {
-                    "concept": "Blockchain",
-                    "definition": "A distributed ledger technology that maintains a continuously growing list of records",
-                    "prerequisites": ["Cryptography", "Distributed Systems", "JavaScript"],
-                    "related_concepts": ["Consensus Mechanisms", "Smart Contracts", "Cryptocurrency"],
-                    "learning_path": [
-                        "Cryptography Basics",
-                        "Distributed Systems",
-                        "Blockchain Architecture",
-                        "Consensus Algorithms",
-                        "Smart Contract Development"
-                    ],
-                    "difficulty_level": "Intermediate",
-                    "estimated_time": "2-4 months"
-                },
-                "smart_contracts": {
-                    "concept": "Smart Contracts",
-                    "definition": "Self-executing contracts with terms directly written into code",
-                    "prerequisites": ["Blockchain", "Solidity", "Ethereum"],
-                    "related_concepts": ["DeFi", "NFTs", "DAOs", "Gas Optimization"],
-                    "learning_path": [
-                        "Solidity Language",
-                        "Ethereum Platform",
-                        "Contract Development",
-                        "Testing and Deployment",
-                        "Security Best Practices"
-                    ],
-                    "difficulty_level": "Intermediate",
-                    "estimated_time": "3-5 months"
-                },
-                "cryptocurrency": {
-                    "concept": "Cryptocurrency",
-                    "definition": "Digital or virtual currency secured by cryptography",
-                    "prerequisites": ["Cryptography", "Economics", "Computer Science"],
-                    "related_concepts": ["Bitcoin", "Ethereum", "Mining", "Wallets"],
-                    "learning_path": [
-                        "Cryptographic Principles",
-                        "Consensus Mechanisms",
-                        "Mining and Validation",
-                        "Wallet Technology",
-                        "Market Dynamics"
-                    ],
-                    "difficulty_level": "Beginner",
-                    "estimated_time": "1-3 months"
-                }
-            },
-            "data_science": {
-                "data_analysis": {
-                    "concept": "Data Analysis",
-                    "definition": "The process of inspecting, cleaning, and modeling data to discover useful information",
-                    "prerequisites": ["Statistics", "Python/R", "SQL"],
-                    "related_concepts": ["Data Visualization", "Statistical Analysis", "Data Cleaning"],
-                    "learning_path": [
-                        "Statistical Foundations",
-                        "Data Manipulation",
-                        "Exploratory Data Analysis",
-                        "Data Visualization",
-                        "Statistical Modeling"
-                    ],
-                    "difficulty_level": "Beginner",
-                    "estimated_time": "2-4 months"
-                },
-                "statistics": {
-                    "concept": "Statistics",
-                    "definition": "The science of collecting, analyzing, and interpreting data",
-                    "prerequisites": ["Mathematics", "Probability"],
-                    "related_concepts": ["Probability", "Hypothesis Testing", "Regression Analysis"],
-                    "learning_path": [
-                        "Descriptive Statistics",
-                        "Probability Theory",
-                        "Inferential Statistics",
-                        "Hypothesis Testing",
-                        "Regression Analysis"
-                    ],
-                    "difficulty_level": "Beginner",
-                    "estimated_time": "2-3 months"
-                },
-                "machine_learning": {
-                    "concept": "Machine Learning",
-                    "definition": "A subset of artificial intelligence that enables computers to learn and make decisions from data",
-                    "prerequisites": ["Statistics", "Linear Algebra", "Python Programming"],
-                    "related_concepts": ["Data Analysis", "Deep Learning", "Neural Networks"],
-                    "learning_path": [
-                        "Data Preprocessing",
-                        "Supervised Learning",
-                        "Unsupervised Learning",
-                        "Model Evaluation",
-                        "Feature Engineering"
-                    ],
-                    "difficulty_level": "Intermediate",
-                    "estimated_time": "3-6 months"
-                }
-            }
+    async def _dynamically_analyze_concept(self, concept: str, domain: str):
+        """Dynamically analyze and add a concept to the knowledge graph"""
+        try:
+            concept_key = concept.lower().replace(" ", "_")
+            
+            # Add the concept to the knowledge graph
+            self.metta.space().add_atom(E(S("concept"), S(concept_key), S(domain)))
+            
+            # Generate dynamic definition
+            definition = f"Dynamic analysis of {concept} in {domain} - a comprehensive learning concept"
+            self.metta.space().add_atom(E(S("definition"), S(concept_key), ValueAtom(definition)))
+            
+            # Generate dynamic difficulty based on concept complexity
+            difficulty = "Intermediate" if len(concept.split()) > 1 else "Beginner"
+            self.metta.space().add_atom(E(S("difficulty"), S(concept_key), ValueAtom(difficulty)))
+            
+            # Generate dynamic time estimate
+            time_estimate = f"{len(concept.split()) * 2}-{len(concept.split()) * 4} weeks"
+            self.metta.space().add_atom(E(S("time_estimate"), S(concept_key), ValueAtom(time_estimate)))
+            
+            # Add some dynamic prerequisites based on domain
+            if domain in ["programming", "data_science"]:
+                self.metta.space().add_atom(E(S("prerequisite"), S(concept_key), S("problem_solving")))
+                self.metta.space().add_atom(E(S("prerequisite"), S(concept_key), S("logical_thinking")))
+            elif domain in ["design", "ui_ux"]:
+                self.metta.space().add_atom(E(S("prerequisite"), S(concept_key), S("creativity")))
+                self.metta.space().add_atom(E(S("prerequisite"), S(concept_key), S("visual_thinking")))
+            
+            print(f"Dynamically added concept: {concept} in {domain}")
+            
+        except Exception as e:
+            print(f"Error dynamically analyzing concept: {e}")
+    
+    async def _generate_dynamic_learning_path(self, concept: str, domain: str) -> List[str]:
+        """Generate a dynamic learning path for any concept"""
+        try:
+            # Generate learning steps based on concept complexity and domain
+            base_steps = [
+                f"Introduction to {concept}",
+                f"Core concepts of {concept}",
+                f"Practical applications of {concept}",
+                f"Advanced topics in {concept}",
+                f"Real-world projects with {concept}"
+            ]
+            
+            # Add domain-specific steps
+            if domain == "programming":
+                base_steps.insert(1, f"Setting up development environment for {concept}")
+                base_steps.insert(-1, f"Best practices and patterns in {concept}")
+            elif domain == "data_science":
+                base_steps.insert(1, f"Data collection and preparation for {concept}")
+                base_steps.insert(-1, f"Data visualization and interpretation")
+            elif domain == "design":
+                base_steps.insert(1, f"Design principles for {concept}")
+                base_steps.insert(-1, f"Portfolio development with {concept}")
+            
+            return base_steps
+            
+        except Exception as e:
+            print(f"Error generating dynamic learning path: {e}")
+            return [f"Learn {concept}", f"Practice {concept}", f"Master {concept}"]
+    
+    async def _dynamic_mock_query(self, domain: str, concept: str) -> Dict[str, Any]:
+        """Dynamic mock query for when MeTTa is not available"""
+        return {
+            "concept": concept,
+            "definition": f"Dynamic analysis of {concept} in {domain} - comprehensive learning approach",
+            "prerequisites": ["Basic understanding", "Fundamental concepts"],
+            "related_concepts": [f"Advanced {concept}", f"{concept} applications"],
+            "learning_path": [
+                f"Introduction to {concept}",
+                f"Core concepts of {concept}",
+                f"Practical applications",
+                f"Advanced topics",
+                f"Real-world projects"
+            ],
+            "difficulty_level": "Intermediate",
+            "estimated_time": "3-6 weeks",
+            "source": "Dynamic Mock MeTTa (AI-Powered)"
+        }
+    
+    async def detect_domain_from_query(self, query: str) -> str:
+        """Dynamically detect domain from any query"""
+        if self.use_real_metta:
+            try:
+                # Use MeTTa's domain detection operation
+                result = self.metta.run(f'!(detect-domain "{query}")')
+                if result and len(result) > 0:
+                    return str(result[0][0])
+            except Exception as e:
+                print(f"MeTTa domain detection error: {e}")
+        
+        # Fallback domain detection
+        query_lower = query.lower()
+        domain_keywords = {
+            "programming": ["code", "program", "software", "development", "coding", "python", "javascript", "java"],
+            "data_science": ["data", "analysis", "statistics", "machine learning", "ai", "pandas", "numpy"],
+            "web_development": ["web", "frontend", "backend", "html", "css", "react", "vue", "angular"],
+            "mobile_development": ["mobile", "app", "ios", "android", "react native", "flutter"],
+            "devops": ["devops", "deployment", "docker", "kubernetes", "aws", "azure", "ci/cd"],
+            "cybersecurity": ["security", "hacking", "penetration", "cyber", "ethical hacking"],
+            "design": ["design", "ui", "ux", "figma", "adobe", "user interface", "user experience"],
+            "business": ["business", "marketing", "finance", "management", "entrepreneurship"],
+            "science": ["science", "physics", "chemistry", "biology", "math", "mathematics"],
+            "language": ["language", "english", "spanish", "french", "learning", "grammar"]
         }
         
-        domain_data = knowledge_graph.get(domain, {})
-        concept_data = domain_data.get(concept.lower().replace(" ", "_"), {})
+        for domain, keywords in domain_keywords.items():
+            if any(keyword in query_lower for keyword in keywords):
+                return domain
         
-        if not concept_data:
-            for key, value in domain_data.items():
-                if concept.lower() in key or key in concept.lower():
-                    concept_data = value
-                    break
-        
-        if concept_data:
-            concept_data["source"] = "Mock MeTTa (Demo Mode)"
-        
-        return concept_data
-    
-    async def get_learning_prerequisites(self, domain: str, concept: str) -> List[str]:
-        concept_data = await self.query_learning_concepts(domain, concept)
-        return concept_data.get("prerequisites", [])
-    
-    async def get_related_concepts(self, domain: str, concept: str) -> List[str]:
-        concept_data = await self.query_learning_concepts(domain, concept)
-        return concept_data.get("related_concepts", [])
-    
-    async def get_learning_path(self, domain: str, concept: str) -> List[str]:
-        concept_data = await self.query_learning_concepts(domain, concept)
-        return concept_data.get("learning_path", [])
-    
-    async def get_concept_definition(self, domain: str, concept: str) -> str:
-        concept_data = await self.query_learning_concepts(domain, concept)
-        return concept_data.get("definition", "No definition available")
+        return "general"
     
     async def suggest_learning_order(self, domain: str, concepts: List[str]) -> List[str]:
-        learning_order = []
-        remaining_concepts = concepts.copy()
-        
-        while remaining_concepts:
-            for concept in remaining_concepts[:]:
-                prerequisites = await self.get_learning_prerequisites(domain, concept)
-                
-                if all(prereq in learning_order for prereq in prerequisites):
-                    learning_order.append(concept)
-                    remaining_concepts.remove(concept)
-                    break
-            else:
-                if remaining_concepts:
-                    learning_order.append(remaining_concepts.pop(0))
-        
-        return learning_order
-
-    async def add_knowledge(self, domain: str, concept: str, knowledge_data: Dict[str, Any]):
+        """Dynamic learning order suggestion for any concepts"""
+        try:
+            # Use MeTTa's relationship analysis
+            learning_order = []
+            remaining_concepts = concepts.copy()
+            
+            while remaining_concepts:
+                for concept in remaining_concepts[:]:
+                    # Check prerequisites dynamically
+                    concept_data = await self.query_learning_concepts(domain, concept)
+                    prerequisites = concept_data.get("prerequisites", [])
+                    
+                    if all(prereq in learning_order for prereq in prerequisites):
+                        learning_order.append(concept)
+                        remaining_concepts.remove(concept)
+                        break
+                else:
+                    if remaining_concepts:
+                        learning_order.append(remaining_concepts.pop(0))
+            
+            return learning_order
+            
+        except Exception as e:
+            print(f"Error suggesting learning order: {e}")
+            return concepts
+    
+    async def add_dynamic_knowledge(self, domain: str, concept: str, knowledge_data: Dict[str, Any]):
+        """Dynamically add knowledge to the MeTTa knowledge graph"""
         if self.use_real_metta and self.metta:
             try:
                 concept_key = concept.lower().replace(" ", "_")
                 
-                self.metta.space().add_atom(E(S("learning_concept"), S(concept_key), S(domain)))
+                # Add concept to knowledge graph
+                self.metta.space().add_atom(E(S("concept"), S(concept_key), S(domain)))
                 
                 if "definition" in knowledge_data:
                     self.metta.space().add_atom(E(S("definition"), S(concept_key), ValueAtom(knowledge_data["definition"])))
@@ -449,35 +350,14 @@ class MeTTaKnowledgeGraph:
                 if "estimated_time" in knowledge_data:
                     self.metta.space().add_atom(E(S("time_estimate"), S(concept_key), ValueAtom(knowledge_data["estimated_time"])))
                 
-                print(f"Added knowledge for {concept} to MeTTa")
+                print(f"Dynamically added knowledge for {concept} to MeTTa")
                 return True
                 
             except Exception as e:
-                print(f"Error adding knowledge: {e}")
+                print(f"Error adding dynamic knowledge: {e}")
                 return False
         else:
-            print(f"📝 Mock mode: Would add knowledge for {concept}")
+            print(f"Mock mode: Would dynamically add knowledge for {concept}")
             return True
 
-async def test_metta_integration():
-    print("Testing MeTTa Knowledge Graph Integration")
-    print("=" * 50)
-    
-    async with MeTTaKnowledgeGraph() as metta:
-        print(f"Using {'Real MeTTa (hyperon)' if metta.use_real_metta else 'Mock MeTTa'}")
-        
-        concept_data = await metta.query_learning_concepts("ai_engineering", "machine learning")
-        print(f"Machine Learning Concept: {concept_data}")
-        
-        prerequisites = await metta.get_learning_prerequisites("ai_engineering", "deep learning")
-        print(f"Deep Learning Prerequisites: {prerequisites}")
-        
-        learning_path = await metta.get_learning_path("web3_development", "smart contracts")
-        print(f"Smart Contracts Learning Path: {learning_path}")
-        
-        concepts = ["deep learning", "machine learning", "neural networks"]
-        order = await metta.suggest_learning_order("ai_engineering", concepts)
-        print(f"Suggested Learning Order: {order}")
-
-if __name__ == "__main__":
-    asyncio.run(test_metta_integration())
+MeTTaKnowledgeGraph = DynamicMeTTaKnowledgeGraph

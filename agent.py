@@ -50,67 +50,48 @@ def create_text_chat(text: str, end_session: bool = False) -> ChatMessage:
 def _extract_topic_from_query(query: str) -> str:
     query_lower = query.lower()
     
-    common_tech_topics = [
-        "python development", "python programming", "python", "django", "flask", "fastapi",
-        "machine learning", "deep learning", "neural networks", "artificial intelligence",
-        "blockchain", "smart contracts", "solidity", "ethereum", "web3",
-        "data science", "data analysis", "statistics", "pandas", "numpy",
-        "javascript", "typescript", "react", "nodejs", "vue", "angular",
-        "java", "c++", "c#", "go", "rust", "swift", "kotlin",
-        "frontend", "backend", "full stack", "mobile development", "ios", "android",
-        "devops", "docker", "kubernetes", "aws", "azure", "gcp",
-        "cybersecurity", "ethical hacking", "penetration testing",
-        "game development", "unity", "unreal engine",
-        "ui/ux design", "figma", "adobe", "design systems",
-        "database", "sql", "mongodb", "postgresql", "redis",
-        "microservices", "api development", "rest", "graphql",
-        "cloud computing", "serverless", "lambda", "terraform",
-        "machine learning ops", "mlops", "data engineering",
-        "quantum computing", "robotics", "iot", "embedded systems"
-    ]
-    
-    for topic in common_tech_topics:
-        if topic in query_lower:
-            return topic.replace(" ", "_")
-    
     words = query_lower.split()
-    if len(words) >= 2:
-        return "_".join(words[:2])
-    else:
-        return words[0] if words else "general_learning"
+    
+    for i in range(len(words) - 1):
+        two_word = f"{words[i]}_{words[i+1]}"
+        if len(two_word) > 6:
+            return two_word
+    
+    for word in words:
+        if len(word) > 3 and word not in ["the", "and", "for", "with", "from", "that", "this", "will", "learn", "teach", "help", "want", "need"]:
+            return word
+    
+    return query_lower.replace(" ", "_")
 
 def _extract_domain_from_query(query: str) -> str:
     query_lower = query.lower()
     
-    domain_mappings = {
-        "python_development": ["python development", "python programming", "python", "django", "flask", "fastapi", "python web", "python backend"],
-        "ai_engineering": ["ai", "artificial intelligence", "machine learning", "deep learning", "neural networks", "ml", "dl"],
-        "web3_development": ["web3", "blockchain", "smart contracts", "solidity", "ethereum", "crypto", "defi", "nft"],
-        "data_science": ["data science", "data analysis", "statistics", "pandas", "numpy", "analytics", "big data"],
-        "web_development": ["web development", "frontend", "backend", "full stack", "react", "vue", "angular", "nodejs", "javascript"],
-        "mobile_development": ["mobile development", "ios", "android", "swift", "kotlin", "react native", "flutter"],
-        "devops": ["devops", "docker", "kubernetes", "aws", "azure", "gcp", "ci/cd", "infrastructure"],
-        "cybersecurity": ["cybersecurity", "security", "ethical hacking", "penetration testing", "network security"],
-        "game_development": ["game development", "unity", "unreal engine", "gaming", "game design"],
-        "ui_ux_design": ["ui", "ux", "design", "figma", "adobe", "user interface", "user experience"],
-        "cloud_computing": ["cloud", "aws", "azure", "gcp", "serverless", "lambda", "terraform"],
-        "database": ["database", "sql", "mongodb", "postgresql", "redis", "data storage"],
-        "software_engineering": ["software engineering", "programming", "coding", "algorithms", "data structures"]
+    domain_keywords = {
+        "programming": ["code", "program", "software", "development", "coding", "python", "javascript", "java", "c++", "c#", "go", "rust"],
+        "data_science": ["data", "analysis", "statistics", "machine learning", "ai", "pandas", "numpy", "analytics", "big data"],
+        "web_development": ["web", "frontend", "backend", "full stack", "react", "vue", "angular", "nodejs", "javascript", "html", "css"],
+        "mobile_development": ["mobile", "app", "ios", "android", "swift", "kotlin", "react native", "flutter"],
+        "devops": ["devops", "docker", "kubernetes", "aws", "azure", "gcp", "ci/cd", "infrastructure", "deployment"],
+        "cybersecurity": ["cybersecurity", "security", "hacking", "penetration", "cyber", "ethical hacking", "network security"],
+        "design": ["design", "ui", "ux", "figma", "adobe", "user interface", "user experience", "visual design"],
+        "business": ["business", "marketing", "finance", "management", "entrepreneurship", "strategy"],
+        "science": ["science", "physics", "chemistry", "biology", "math", "mathematics", "research"],
+        "language": ["language", "english", "spanish", "french", "learning", "grammar", "linguistics"],
+        "music": ["music", "guitar", "piano", "singing", "composition", "audio", "sound"],
+        "art": ["art", "drawing", "painting", "sculpture", "digital art", "photography"],
+        "cooking": ["cooking", "baking", "culinary", "recipe", "chef", "food"],
+        "fitness": ["fitness", "exercise", "workout", "gym", "yoga", "running", "training"],
+        "psychology": ["psychology", "mental health", "therapy", "counseling", "behavior"],
+        "philosophy": ["philosophy", "ethics", "logic", "metaphysics", "thinking"],
+        "history": ["history", "historical", "ancient", "medieval", "modern", "world history"],
+        "literature": ["literature", "writing", "poetry", "novel", "creative writing", "reading"]
     }
     
-    for domain, keywords in domain_mappings.items():
-        for keyword in keywords:
-            if keyword in query_lower:
-                return domain
+    for domain, keywords in domain_keywords.items():
+        if any(keyword in query_lower for keyword in keywords):
+            return domain
     
-    if any(word in query_lower for word in ["programming", "coding", "development", "software"]):
-        return "software_engineering"
-    elif any(word in query_lower for word in ["web", "html", "css", "javascript", "react", "vue"]):
-        return "web_development"
-    elif any(word in query_lower for word in ["mobile", "app", "ios", "android"]):
-        return "mobile_development"
-    else:
-        return "general_tech"
+    return "general"
 
 @learning_chat_proto.on_message(ChatMessage)
 async def handle_learning_message(ctx: Context, sender: str, msg: ChatMessage):
@@ -125,36 +106,40 @@ async def handle_learning_message(ctx: Context, sender: str, msg: ChatMessage):
         if isinstance(item, StartSessionContent):
             ctx.logger.info(f"Session started with {sender}")
             welcome_message = create_text_chat("""
-**Welcome to EduFinder - Your AI Learning Companion!**
+**Welcome to EduFinder - Your Unlimited AI Learning Companion!**
 
-I'm your comprehensive learning assistant that creates personalized curricula, discovers educational resources, and provides deep insights for any technical domain.
+I'm your dynamic learning assistant powered by **MeTTa Knowledge Graph** and **Gemini AI** that can handle ANY educational topic or domain!
 
 **What I can help you with:**
-• **Curriculum Creation** - Structured learning paths for any tech domain
-• **Resource Discovery** - Educational videos, courses, books, and projects with links
-• **Deep Insights** - Concept relationships and learning dependencies via Gemini AI
-• **Personalized Learning** - Adapts to your skill level and goals
+• **Dynamic Curriculum Creation** - AI-powered learning paths for ANY subject
+• **Intelligent Resource Discovery** - Real-time educational content discovery
+• **Deep Conceptual Insights** - Advanced reasoning and concept relationships
+• **Unlimited Domain Support** - From programming to philosophy, cooking to quantum physics!
 
-**Supported Learning Domains:**
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps, DeFi
-• **Data Science** - Data analysis, statistics, machine learning
-• **Web Development** - Frontend, backend, full-stack, React, Vue, Angular
-• **Mobile Development** - iOS, Android, React Native, Flutter
-• **DevOps** - Docker, Kubernetes, AWS, Azure, GCP
-• **Cybersecurity** - Ethical hacking, penetration testing, network security
-• **Game Development** - Unity, Unreal Engine, game design
-• **UI/UX Design** - User interface, user experience, Figma, Adobe
-• **Cloud Computing** - Serverless, Lambda, Terraform, infrastructure
-• **Database** - SQL, MongoDB, PostgreSQL, Redis
-• **Software Engineering** - Programming, algorithms, data structures
-• **And many more!** - I can handle any educational or technical domain
+**Supported Learning Domains (Unlimited!):**
+• **Technology**: Programming, AI, Web3, Data Science, DevOps, Cybersecurity
+• **Creative Arts**: Design, Music, Art, Photography, Creative Writing
+• **Sciences**: Physics, Chemistry, Biology, Mathematics, Research Methods
+• **Languages**: English, Spanish, French, Linguistics, Grammar
+• **Life Skills**: Cooking, Fitness, Psychology, Philosophy, History
+• **Business**: Marketing, Finance, Management, Entrepreneurship
+• **And ANYTHING else you want to learn!**
 
-**Try asking me:**
-- "Teach me React development" (curriculum creation)
-- "Find Python resources" (resource discovery)
-- "Explain machine learning concepts" (deep insights)
-- "Create a personalized learning path for cybersecurity"
+**Powered by Advanced AI:**
+• **MeTTa Knowledge Graph** - Dynamic concept analysis and relationships
+• **Gemini AI** - Natural language understanding and generation
+• **Real-time Learning** - Adapts to any topic instantly
+• **Intelligent Reasoning** - Deep insights and personalized guidance
+
+**Try asking me ANYTHING:**
+- "Teach me quantum physics" (curriculum creation)
+- "Find resources for learning Spanish" (resource discovery)  
+- "Explain the philosophy of ethics" (deep insights)
+- "Create a learning path for cooking Italian cuisine"
+- "Help me understand machine learning algorithms"
+- "I want to learn guitar from scratch"
+
+**No limits, no boundaries - just pure learning power!**
 
 What would you like to learn today?
             """)
@@ -164,17 +149,16 @@ What would you like to learn today?
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             user_input = item.text.lower()
             
-            # Check for greetings and respond naturally
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
             if any(greeting in user_input for greeting in greeting_words):
                 greeting_response = """
-Hello! 👋 Welcome to EduFinder - Your AI-Powered Learning Companion!
+Hello! Welcome to EduFinder - Your AI-Powered Learning Companion!
 
 I'm your comprehensive learning assistant that can help you with:
 
-📚 **Curriculum Creation** - Structured learning paths for any tech domain
-🎥 **Resource Discovery** - Educational videos, courses, books, and projects with links  
-🧠 **Deep Insights** - Concept relationships and learning dependencies
+**Curriculum Creation** - Structured learning paths for any tech domain
+**Resource Discovery** - Educational videos, courses, books, and projects with links  
+**Deep Insights** - Concept relationships and learning dependencies
 
 I work with specialized AI agents to provide you with personalized educational experiences. Just tell me what you want to learn about, and I'll route your request to the right specialist!
 
@@ -196,7 +180,7 @@ What would you like to learn today?
                     original_sender=sender,
                     request_id=request_id
                 ))
-                response = f"📚 Creating your comprehensive educational plan for {topic.replace('_', ' ').title()}..."
+                response = f"Creating your comprehensive educational plan for {topic.replace('_', ' ').title()}..."
                 
             elif any(keyword in user_input for keyword in ["resources", "find", "get me", "show me", "videos", "courses", "books", "tutorials", "materials"]):
                 topic = _extract_topic_from_query(item.text)
@@ -214,7 +198,7 @@ What would you like to learn today?
                     original_sender=sender,
                     request_id=request_id
                 ))
-                response = f"🎥 Finding targeted resources for {topic.replace('_', ' ').title()}..."
+                response = f"Finding targeted resources for {topic.replace('_', ' ').title()}..."
                 
             elif any(keyword in user_input for keyword in ["explain", "how does", "what is", "concept", "relationship", "prerequisite", "deep insights"]):
                 concept = _extract_topic_from_query(item.text)
@@ -232,7 +216,7 @@ What would you like to learn today?
                     original_sender=sender,
                     request_id=request_id
                 ))
-                response = f"🧠 Generating deep insights about {concept.replace('_', ' ').title()}..."
+                response = f"Generating deep insights about {concept.replace('_', ' ').title()}..."
                 
             elif "help" in user_input or "what can you do" in user_input:
                 response = """
@@ -240,10 +224,10 @@ What would you like to learn today?
 
 **My Capabilities:**
 
-**📚 Educational Plan Creation** - I create complete learning paths with step-by-step resources
-**🎥 Resource Discovery** - I find targeted learning materials, courses, and videos
-**🧠 Deep Insights** - I explain concepts, relationships, and learning dependencies
-**🎯 Personalized Learning** - I adapt plans to your skill level and goals
+**Educational Plan Creation** - I create complete learning paths with step-by-step resources
+**Resource Discovery** - I find targeted learning materials, courses, and videos
+**Deep Insights** - I explain concepts, relationships, and learning dependencies
+**Personalized Learning** - I adapt plans to your skill level and goals
 
 **What I Do:**
 • **Comprehensive Plans**: Each step includes learning resources, links, and YouTube videos

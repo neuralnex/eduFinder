@@ -41,59 +41,64 @@ class GeminiLearningService:
         query_lower = query.lower()
         concepts = []
         
-        tech_concepts = [
-            "machine learning", "deep learning", "neural networks", "artificial intelligence",
-            "blockchain", "smart contracts", "solidity", "ethereum", "web3",
-            "data science", "data analysis", "statistics", "pandas", "numpy",
-            "python", "javascript", "typescript", "react", "nodejs", "vue", "angular",
-            "java", "c++", "c#", "go", "rust", "swift", "kotlin",
-            "frontend", "backend", "full stack", "mobile development", "ios", "android",
-            "devops", "docker", "kubernetes", "aws", "azure", "gcp",
-            "cybersecurity", "ethical hacking", "penetration testing",
-            "game development", "unity", "unreal engine",
-            "ui/ux design", "figma", "adobe", "design systems",
-            "database", "sql", "mongodb", "postgresql", "redis",
-            "microservices", "api development", "rest", "graphql",
-            "cloud computing", "serverless", "lambda", "terraform"
-        ]
+        words = query_lower.split()
         
-        for concept in tech_concepts:
-            if concept in query_lower:
-                concepts.append(concept.replace(" ", "_"))
+        for i in range(len(words) - 1):
+            two_word = f"{words[i]}_{words[i+1]}"
+            if len(two_word) > 6:
+                concepts.append(two_word)
+        
+        for word in words:
+            if len(word) > 3 and word not in ["the", "and", "for", "with", "from", "that", "this", "will", "learn", "teach", "help", "want", "need"]:
+                concepts.append(word)
         
         if not concepts:
-            words = query_lower.split()
-            concepts = [word for word in words if len(word) > 3][:3]
+            concepts = [query_lower.replace(" ", "_")]
         
-        return concepts
+        return concepts[:5]
 
     async def generate_curriculum(self, domain: str, user_query: str = "") -> str:
         if not self.gemini_available:
             return self._get_fallback_curriculum(domain)
         
+        if domain in ["general", "general_tech", ""]:
+            try:
+                from .metta_integration import DynamicMeTTaKnowledgeGraph
+                async with DynamicMeTTaKnowledgeGraph() as metta:
+                    domain = await metta.detect_domain_from_query(user_query)
+            except Exception as e:
+                print(f"Dynamic domain detection error: {e}")
+        
         metta_insights = ""
         if METTA_AVAILABLE:
             try:
-                from .metta_integration import MeTTaKnowledgeGraph
-                async with MeTTaKnowledgeGraph() as metta:
+                from .metta_integration import DynamicMeTTaKnowledgeGraph
+                async with DynamicMeTTaKnowledgeGraph() as metta:
                     if metta.use_real_metta:
                         concepts = self._extract_concepts_from_query(user_query)
                         for concept in concepts[:3]:
                             metta_data = await metta.query_learning_concepts(domain, concept)
-                            if metta_data and metta_data.get("prerequisites"):
-                                metta_insights += f"\n**MeTTa Knowledge Graph Insights for {concept}:**\n"
-                                metta_insights += f"- Prerequisites: {', '.join(metta_data['prerequisites'])}\n"
+                            if metta_data and "Dynamic MeTTa Knowledge Graph" in metta_data.get("source", ""):
+                                metta_insights += f"\n**Dynamic MeTTa Knowledge Graph Insights for {concept.replace('_', ' ').title()}:**\n"
+                                if metta_data.get("prerequisites"):
+                                    metta_insights += f"- **Prerequisites**: {', '.join(metta_data['prerequisites'])}\n"
                                 if metta_data.get("related_concepts"):
-                                    metta_insights += f"- Related Concepts: {', '.join(metta_data['related_concepts'])}\n"
-                                if metta_data.get("learning_steps"):
-                                    metta_insights += f"- Learning Path: {' → '.join(metta_data['learning_steps'])}\n"
+                                    metta_insights += f"- **Related Concepts**: {', '.join(metta_data['related_concepts'])}\n"
+                                if metta_data.get("learning_path"):
+                                    metta_insights += f"- **Learning Path**: {' → '.join(metta_data['learning_path'])}\n"
+                                if metta_data.get("difficulty_level"):
+                                    metta_insights += f"- **Difficulty Level**: {metta_data['difficulty_level']}\n"
+                                if metta_data.get("estimated_time"):
+                                    metta_insights += f"- **Estimated Time**: {metta_data['estimated_time']}\n"
+                                metta_insights += "\n"
             except Exception as e:
+                print(f"Dynamic MeTTa integration error in curriculum generation: {e}")
                 pass
         
         try:
             prompt = f"""
             User Query: "{user_query}"
-            Domain: {domain}
+            Detected Domain: {domain}
             
             Based on the user's specific query, create a comprehensive educational plan that directly addresses what they want to learn.
             
@@ -155,17 +160,46 @@ class GeminiLearningService:
         if not self.gemini_available:
             return self._get_fallback_materials(topic, domain)
 
+        if domain in ["general", "general_tech", ""]:
+            try:
+                from .metta_integration import DynamicMeTTaKnowledgeGraph
+                async with DynamicMeTTaKnowledgeGraph() as metta:
+                    domain = await metta.detect_domain_from_query(user_query)
+            except Exception as e:
+                print(f"Dynamic domain detection error: {e}")
+
+        metta_insights = ""
+        if METTA_AVAILABLE:
+            try:
+                from .metta_integration import DynamicMeTTaKnowledgeGraph
+                async with DynamicMeTTaKnowledgeGraph() as metta:
+                    if metta.use_real_metta:
+                        metta_data = await metta.query_learning_concepts(domain, topic)
+                        if metta_data and "Dynamic MeTTa Knowledge Graph" in metta_data.get("source", ""):
+                            metta_insights += f"\n**Dynamic MeTTa Insights for {topic.replace('_', ' ').title()}:**\n"
+                            if metta_data.get("prerequisites"):
+                                metta_insights += f"- **Prerequisites**: {', '.join(metta_data['prerequisites'])}\n"
+                            if metta_data.get("difficulty_level"):
+                                metta_insights += f"- **Difficulty Level**: {metta_data['difficulty_level']}\n"
+                            if metta_data.get("estimated_time"):
+                                metta_insights += f"- **Estimated Time**: {metta_data['estimated_time']}\n"
+                            metta_insights += "\n"
+            except Exception as e:
+                print(f"Dynamic MeTTa integration error in materials generation: {e}")
+
         try:
             prompt = f"""
             User Query: "{user_query}"
             Topic: {topic}
-            Domain: {domain}
+            Detected Domain: {domain}
+            
+            {metta_insights}
             
             Based on the user's specific request, provide targeted learning resources that directly address what they're looking for.
             
             Analyze their query and provide:
             
-            **Learning Resources for {topic} in {domain.title()}**
+            **Learning Resources for {topic} in {domain.replace('_', ' ').title()}**
             
             **Essential Resources** (tailored to their specific request):
             • **Courses**: [Specific courses relevant to their query] - [Direct links]
@@ -199,33 +233,45 @@ class GeminiLearningService:
         if not self.gemini_available:
             return self._get_fallback_insights(concept, domain)
         
+        if domain in ["general", "general_tech", ""]:
+            try:
+                from .metta_integration import DynamicMeTTaKnowledgeGraph
+                async with DynamicMeTTaKnowledgeGraph() as metta:
+                    domain = await metta.detect_domain_from_query(user_query)
+            except Exception as e:
+                print(f"Dynamic domain detection error: {e}")
+        
         metta_insights = ""
         if METTA_AVAILABLE:
             try:
-                from .metta_integration import MeTTaKnowledgeGraph
-                async with MeTTaKnowledgeGraph() as metta:
+                from .metta_integration import DynamicMeTTaKnowledgeGraph
+                async with DynamicMeTTaKnowledgeGraph() as metta:
                     if metta.use_real_metta:
                         metta_data = await metta.query_learning_concepts(domain, concept)
-                        if metta_data:
-                            metta_insights += f"\n**MeTTa Knowledge Graph Analysis for {concept}:**\n"
+                        if metta_data and "Dynamic MeTTa Knowledge Graph" in metta_data.get("source", ""):
+                            metta_insights += f"\n**Dynamic MeTTa Knowledge Graph Analysis for {concept.replace('_', ' ').title()}:**\n"
                             if metta_data.get("prerequisites"):
                                 metta_insights += f"- **Prerequisites**: {', '.join(metta_data['prerequisites'])}\n"
                             if metta_data.get("related_concepts"):
                                 metta_insights += f"- **Related Concepts**: {', '.join(metta_data['related_concepts'])}\n"
-                            if metta_data.get("learning_steps"):
-                                metta_insights += f"- **Learning Sequence**: {' → '.join(metta_data['learning_steps'])}\n"
+                            if metta_data.get("learning_path"):
+                                metta_insights += f"- **Learning Sequence**: {' → '.join(metta_data['learning_path'])}\n"
                             if metta_data.get("difficulty_level"):
                                 metta_insights += f"- **Difficulty Level**: {metta_data['difficulty_level']}\n"
                             if metta_data.get("estimated_time"):
                                 metta_insights += f"- **Estimated Learning Time**: {metta_data['estimated_time']}\n"
+                            if metta_data.get("definition"):
+                                metta_insights += f"- **Definition**: {metta_data['definition']}\n"
+                            metta_insights += "\n"
             except Exception as e:
+                print(f"Dynamic MeTTa integration error in deep insights generation: {e}")
                 pass
         
         try:
             prompt = f"""
             User Query: "{user_query}"
             Concept: {concept}
-            Domain: {domain}
+            Detected Domain: {domain}
             
             {metta_insights}
             
@@ -233,7 +279,7 @@ class GeminiLearningService:
             
             Analyze their query and provide:
             
-            **Deep Insights: {concept} in {domain.title()}**
+            **Deep Insights: {concept} in {domain.replace('_', ' ').title()}**
             
             **Core Understanding** (tailored to their specific question):
             [Explain the concept based on what they specifically asked about]

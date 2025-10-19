@@ -45,6 +45,50 @@ def create_text_chat(text: str, end_session: bool = False) -> ChatMessage:
         content=content
     )
 
+def _extract_topic_from_query(query: str) -> str:
+    query_lower = query.lower()
+    words = query_lower.split()
+    
+    for i in range(len(words) - 1):
+        two_word = f"{words[i]}_{words[i+1]}"
+        if len(two_word) > 6:
+            return two_word
+    
+    for word in words:
+        if len(word) > 3 and word not in ["the", "and", "for", "with", "from", "that", "this", "will", "learn", "teach", "help", "want", "need"]:
+            return word
+    
+    return query_lower.replace(" ", "_")
+
+def _extract_domain_from_query(query: str) -> str:
+    query_lower = query.lower()
+    domain_keywords = {
+        "programming": ["code", "program", "software", "development", "coding", "python", "javascript", "java", "c++", "c#", "go", "rust"],
+        "data_science": ["data", "analysis", "statistics", "machine learning", "ai", "pandas", "numpy", "analytics", "big data"],
+        "web_development": ["web", "frontend", "backend", "full stack", "react", "vue", "angular", "nodejs", "javascript", "html", "css"],
+        "mobile_development": ["mobile", "app", "ios", "android", "swift", "kotlin", "react native", "flutter"],
+        "devops": ["devops", "docker", "kubernetes", "aws", "azure", "gcp", "ci/cd", "infrastructure", "deployment"],
+        "cybersecurity": ["cybersecurity", "security", "hacking", "penetration", "cyber", "ethical hacking", "network security"],
+        "design": ["design", "ui", "ux", "figma", "adobe", "user interface", "user experience", "visual design"],
+        "business": ["business", "marketing", "finance", "management", "entrepreneurship", "strategy"],
+        "science": ["science", "physics", "chemistry", "biology", "math", "mathematics", "research"],
+        "language": ["language", "english", "spanish", "french", "learning", "grammar", "linguistics"],
+        "music": ["music", "guitar", "piano", "singing", "composition", "audio", "sound"],
+        "art": ["art", "drawing", "painting", "sculpture", "digital art", "photography"],
+        "cooking": ["cooking", "baking", "culinary", "recipe", "chef", "food"],
+        "fitness": ["fitness", "exercise", "workout", "gym", "yoga", "running", "training"],
+        "psychology": ["psychology", "mental health", "therapy", "counseling", "behavior"],
+        "philosophy": ["philosophy", "ethics", "logic", "metaphysics", "thinking"],
+        "history": ["history", "historical", "ancient", "medieval", "modern", "world history"],
+        "literature": ["literature", "writing", "poetry", "novel", "creative writing", "reading"]
+    }
+    
+    for domain, keywords in domain_keywords.items():
+        if any(keyword in query_lower for keyword in keywords):
+            return domain
+    
+    return "general"
+
 @enhanced_chat_proto.on_message(ChatMessage)
 async def handle_enhanced_message(ctx: Context, sender: str, msg: ChatMessage):
     ctx.logger.info(f"Received message from {sender}")
@@ -60,35 +104,29 @@ async def handle_enhanced_message(ctx: Context, sender: str, msg: ChatMessage):
             welcome_message = create_text_chat("""
 **Welcome to Enhanced Learning Agent!**
 
-I provide deep insights and intelligent analysis using Gemini AI for any technical domain.
+I provide deep insights and intelligent analysis using dynamic AI for ANY domain.
 
 **What makes me special:**
-• **Deep Concept Analysis** - I explain how different topics connect and relate
-• **Prerequisite Mapping** - I know what you need to learn before tackling advanced topics
-• **Learning Sequence Optimization** - I suggest the best order to learn concepts
+• **Dynamic Concept Analysis** - I explain how different topics connect and relate
+• **AI-Powered Prerequisite Mapping** - I know what you need to learn using MeTTa knowledge graph
+• **Intelligent Learning Sequence** - I suggest optimal order using AI analysis
 • **Cross-Domain Connections** - I show how concepts relate across different fields
-• **Intelligent Insights** - Powered by Gemini AI for comprehensive understanding
+• **Deep AI Insights** - Powered by Gemini AI and MeTTa knowledge graph
 
-**Supported Learning Domains:**
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps, DeFi
-• **Data Science** - Data analysis, statistics, machine learning
-• **Web Development** - Frontend, backend, full-stack, React, Vue, Angular
-• **Mobile Development** - iOS, Android, React Native, Flutter
-• **DevOps** - Docker, Kubernetes, AWS, Azure, GCP
-• **Cybersecurity** - Ethical hacking, penetration testing, network security
-• **Game Development** - Unity, Unreal Engine, game design
-• **UI/UX Design** - User interface, user experience, Figma, Adobe
-• **Cloud Computing** - Serverless, Lambda, Terraform, infrastructure
-• **Database** - SQL, MongoDB, PostgreSQL, Redis
-• **Software Engineering** - Programming, algorithms, data structures
-• **And many more!** - I can provide insights for any educational domain
+**Unlimited Domain Support:**
+• **Technology**: Programming, AI, Web3, Data Science, DevOps, Cybersecurity
+• **Creative Arts**: Design, Music, Art, Photography, Creative Writing
+• **Sciences**: Physics, Chemistry, Biology, Mathematics, Research Methods
+• **Languages**: English, Spanish, French, Linguistics, Grammar
+• **Life Skills**: Cooking, Fitness, Psychology, Philosophy, History
+• **Business**: Marketing, Finance, Management, Entrepreneurship
+• **And ANYTHING else you want to understand!**
 
-**Try asking me:**
-- "Explain machine learning concepts"
-- "How do React and Node.js relate?"
-- "What should I learn first for cybersecurity?"
-- "Explain the relationship between Docker and Kubernetes"
+**Try asking me ANYTHING:**
+- "Explain quantum physics concepts"
+- "How do cooking and chemistry relate?"
+- "What should I learn first for philosophy?"
+- "Explain the relationship between music and mathematics"
 
 What would you like to understand deeply?
             """)
@@ -97,21 +135,21 @@ What would you like to understand deeply?
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             
-            # Check for greetings and respond naturally
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
             if any(greeting in item.text.lower() for greeting in greeting_words):
                 greeting_response = """
-Hello! 👋 I'm the Enhanced Learning Agent, your AI-powered deep insights specialist!
+Hello! I'm the Enhanced Learning Agent, your AI-powered deep insights specialist!
 
-I specialize in providing deep conceptual analysis and intelligent insights for any technical domain. I can explain how different concepts connect, identify prerequisites, and help you understand the relationships between various topics.
+I specialize in providing deep conceptual analysis and intelligent insights for ANY domain using dynamic AI analysis. I can explain how different concepts connect, identify prerequisites using MeTTa knowledge graph, and help you understand the relationships between various topics.
 
 What would you like to understand deeply? I'm here to provide comprehensive insights and analysis!
                 """
                 response_message = create_text_chat(greeting_response)
                 await ctx.send(sender, response_message)
             else:
-                # Use Gemini to understand and respond to any query
-                response = await gemini_service.generate_deep_insights("general", "general", item.text)
+                concept = _extract_topic_from_query(item.text)
+                domain = _extract_domain_from_query(item.text)
+                response = await gemini_service.generate_deep_insights(concept, domain, item.text)
                 
                 response_message = create_text_chat(response)
                 await ctx.send(sender, response_message)

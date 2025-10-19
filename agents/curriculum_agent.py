@@ -60,35 +60,29 @@ async def handle_curriculum_message(ctx: Context, sender: str, msg: ChatMessage)
             welcome_message = create_text_chat("""
 **Welcome to Curriculum Agent!**
 
-I specialize in creating structured learning paths and curricula for any technical domain using Gemini AI.
+I specialize in creating structured learning paths and curricula for ANY domain using dynamic AI analysis.
 
 **What I can help you with:**
-• **Curriculum Creation** - Structured learning paths for any tech domain
-• **Learning Module Organization** - Break down complex subjects into manageable steps
-• **Prerequisite Identification** - Show you what you need to learn first
-• **Learning Sequence Planning** - Optimal order for mastering concepts
-• **Difficulty Progression** - From beginner to advanced levels
+• **Dynamic Curriculum Creation** - AI-powered learning paths for ANY subject
+• **Intelligent Module Organization** - Break down complex subjects dynamically
+• **Prerequisite Identification** - AI-powered dependency analysis
+• **Learning Sequence Planning** - Optimal order using MeTTa knowledge graph
+• **Difficulty Progression** - Adaptive difficulty based on concept complexity
 
-**Supported Learning Domains:**
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps, DeFi
-• **Data Science** - Data analysis, statistics, machine learning
-• **Web Development** - Frontend, backend, full-stack, React, Vue, Angular
-• **Mobile Development** - iOS, Android, React Native, Flutter
-• **DevOps** - Docker, Kubernetes, AWS, Azure, GCP
-• **Cybersecurity** - Ethical hacking, penetration testing, network security
-• **Game Development** - Unity, Unreal Engine, game design
-• **UI/UX Design** - User interface, user experience, Figma, Adobe
-• **Cloud Computing** - Serverless, Lambda, Terraform, infrastructure
-• **Database** - SQL, MongoDB, PostgreSQL, Redis
-• **Software Engineering** - Programming, algorithms, data structures
-• **And many more!** - I can create curricula for any educational domain
+**Unlimited Domain Support:**
+• **Technology**: Programming, AI, Web3, Data Science, DevOps, Cybersecurity
+• **Creative Arts**: Design, Music, Art, Photography, Creative Writing
+• **Sciences**: Physics, Chemistry, Biology, Mathematics, Research Methods
+• **Languages**: English, Spanish, French, Linguistics, Grammar
+• **Life Skills**: Cooking, Fitness, Psychology, Philosophy, History
+• **Business**: Marketing, Finance, Management, Entrepreneurship
+• **And ANYTHING else you want to learn!**
 
-**Try asking me:**
-- "Teach me React development"
-- "Create a cybersecurity curriculum"
-- "What should I learn first for machine learning?"
-- "Make a learning path for DevOps"
+**Try asking me ANYTHING:**
+- "Teach me quantum physics"
+- "Create a cooking curriculum"
+- "What should I learn first for philosophy?"
+- "Make a learning path for guitar"
 
 What would you like to learn about?
             """)
@@ -97,20 +91,18 @@ What would you like to learn about?
         elif isinstance(item, TextContent):
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             
-            # Check for greetings and respond naturally
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
             if any(greeting in item.text.lower() for greeting in greeting_words):
                 greeting_response = """
-Hello! 👋 I'm the Curriculum Agent, your AI-powered learning path creator!
+Hello! I'm the Curriculum Agent, your AI-powered learning path creator!
 
-I specialize in creating structured educational curricula for any technical domain. Whether you want to learn Python, React, blockchain development, or any other tech skill, I can break it down into manageable learning steps.
+I specialize in creating structured educational curricula for ANY domain using dynamic AI analysis. Whether you want to learn quantum physics, cooking, philosophy, programming, or any other subject, I can break it down into manageable learning steps using MeTTa knowledge graph insights.
 
 What would you like to learn about? Just tell me your learning goals and I'll create a personalized curriculum for you!
                 """
                 response_message = create_text_chat(greeting_response)
                 await ctx.send(sender, response_message)
             else:
-                # Use Gemini to understand and respond to any query
                 response = await gemini_service.generate_curriculum("general", item.text)
                 
                 response_message = create_text_chat(response)

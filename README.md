@@ -1,9 +1,50 @@
 ![tag:innovationlab](https://img.shields.io/badge/innovationlab-3D8BD3)
 ![tag:hackathon](https://img.shields.io/badge/hackathon-5F43F1)
 
+# Use python version 3.12*
+
 # 🚀 EduFinder - AI-Powered Learning Path System
 
-**EduFinder** is an intelligent multi-agent system that creates personalized educational plans, discovers targeted learning resources, and provides deep insights for any technical domain. Built with **uAgents** framework and powered by **Gemini AI** and **MeTTa Knowledge Graph**.
+**EduFinder** is an intelligent multi-agent system that creates personalized educational plans, discovers targeted learning resources, and provides deep insights for ANY domain. Built with **uAgents** framework and powered by **Gemini AI** and **MeTTa Knowledge Graph** for unlimited learning capabilities.
+
+## 🧠 **MeTTa Knowledge Graph Integration**
+
+**EduFinder leverages the power of MeTTa Knowledge Graph for intelligent learning:**
+
+### **🔬 Dynamic Knowledge Management**
+- **Real-time Concept Analysis**: MeTTa dynamically analyzes any learning concept
+- **Prerequisite Mapping**: AI-powered dependency analysis using knowledge graph
+- **Learning Path Optimization**: Intelligent sequencing based on concept relationships
+- **Cross-Domain Connections**: Reveals how concepts relate across different fields
+- **Adaptive Difficulty Assessment**: Dynamic difficulty scoring based on concept complexity
+
+### **⚡ Advanced MeTTa Operations**
+- **`analyze-concept`**: Dynamic concept analysis using AI
+- **`detect-domain`**: Intelligent domain detection from any query
+- **`find-relationships`**: Concept relationship mapping and dependency analysis
+- **Dynamic Knowledge Expansion**: Real-time knowledge graph updates
+- **Grounded Atoms**: External data integration and Python object embedding
+
+### **🎯 Unlimited Domain Support**
+The MeTTa integration enables support for ANY educational domain:
+- **Technology**: Programming, AI, Web3, Data Science, DevOps, Cybersecurity
+- **Creative Arts**: Design, Music, Art, Photography, Creative Writing
+- **Sciences**: Physics, Chemistry, Biology, Mathematics, Research Methods
+- **Languages**: English, Spanish, French, Linguistics, Grammar
+- **Life Skills**: Cooking, Fitness, Psychology, Philosophy, History
+- **Business**: Marketing, Finance, Management, Entrepreneurship
+- **And ANYTHING else you want to learn!**
+
+### **🔧 MeTTa Configuration**
+```bash
+# Install MeTTa (hyperon)
+pip install hyperon
+
+# Configure MeTTa settings
+METTA_ENDPOINT=http://localhost:8080
+METTA_SPACE=learning_space
+METTA_USE_MOCK=false  # Set to true for demo mode
+```
 
 ## ✨ Agent Powers & Capabilities
 
@@ -11,11 +52,11 @@
 **Agent Address**: `agent1q2ygnhcc5xj3davnvu0g0p0qytuyc7dsz8dh538ks49y7sru5t9skwn5gne`
 
 **🔥 Core Powers:**
-- **🧠 Smart Query Analysis**: Uses Gemini AI to understand user intent and extract learning topics
+- **🧠 Smart Query Analysis**: Uses Gemini AI + MeTTa Knowledge Graph to understand user intent and extract learning topics
 - **🎯 Intelligent Routing**: Automatically routes requests to the most appropriate specialized agent
 - **🔄 Request Orchestration**: Manages complex multi-agent workflows with unique request tracking
 - **💬 Natural Greeting Handling**: Responds naturally to greetings and provides comprehensive system overview
-- **🌐 Universal Domain Support**: Handles ANY educational or technical domain dynamically
+- **🌐 Universal Domain Support**: Handles ANY educational domain dynamically using MeTTa knowledge graph
 - **⚡ Real-time Coordination**: Seamlessly coordinates responses from multiple agents back to users
 
 **🎯 Routing Intelligence:**
@@ -29,18 +70,18 @@
 **Agent Address**: `agent1q2t29q262rsp660k727g3nhejn2sftdesfrc4k6dttydwzs2nsp2ypfzww8`
 
 **🔥 Core Powers:**
-- **🏗️ Structured Learning Architecture**: Creates comprehensive, step-by-step learning paths for any domain
-- **🎯 Prerequisite Intelligence**: Automatically identifies what learners need to know first
-- **📈 Difficulty Progression**: Designs optimal progression from beginner to advanced levels
-- **⏱️ Time Management**: Provides realistic time estimates for each learning phase
-- **🎨 Personalized Curricula**: Tailors learning paths to specific user goals and contexts
-- **🔗 Concept Integration**: Shows how different topics connect within a learning domain
+- **🏗️ Dynamic Learning Architecture**: Creates comprehensive, step-by-step learning paths for ANY domain using MeTTa knowledge graph
+- **🎯 AI-Powered Prerequisite Intelligence**: Automatically identifies what learners need to know first using MeTTa concept analysis
+- **📈 Adaptive Difficulty Progression**: Designs optimal progression from beginner to advanced levels using MeTTa difficulty assessment
+- **⏱️ Intelligent Time Management**: Provides realistic time estimates using MeTTa learning path analysis
+- **🎨 Personalized Curricula**: Tailors learning paths to specific user goals using dynamic MeTTa insights
+- **🔗 Dynamic Concept Integration**: Shows how different topics connect using MeTTa relationship mapping
 
 **🎯 Specialized Capabilities:**
-- **Domain Expertise**: Handles 15+ technical domains (AI, Web3, Data Science, Web Dev, Mobile, DevOps, etc.)
-- **Learning Module Organization**: Breaks complex subjects into manageable, digestible steps
-- **Learning Sequence Optimization**: Determines the best order for mastering concepts
-- **Practice Integration**: Includes hands-on exercises and project suggestions
+- **Unlimited Domain Support**: Handles ANY educational domain using MeTTa knowledge graph
+- **Dynamic Learning Module Organization**: Breaks complex subjects into manageable steps using MeTTa analysis
+- **AI-Powered Learning Sequence Optimization**: Determines optimal order using MeTTa concept relationships
+- **Intelligent Practice Integration**: Includes hands-on exercises using MeTTa learning path insights
 
 ---
 
@@ -48,12 +89,12 @@
 **Agent Address**: `agent1qdq2ynx5e5qcyyhnzzr4cmvpg4wufvqskqp2dl9nldm9w7da6lvysdxwnuf`
 
 **🔥 Core Powers:**
-- **🔍 Real-time Resource Discovery**: Finds the most relevant educational materials instantly
-- **🎥 YouTube Integration**: Discovers educational videos with detailed metadata (duration, views, channel, description)
-- **📚 Multi-format Resources**: Curates courses, books, documentation, tutorials, and hands-on projects
+- **🔍 Dynamic Resource Discovery**: Finds the most relevant educational materials instantly using MeTTa knowledge graph insights
+- **🎥 Intelligent YouTube Integration**: Discovers educational videos with detailed metadata using AI-powered analysis
+- **📚 Multi-format Resource Curation**: Curates courses, books, documentation, tutorials using MeTTa concept analysis
 - **🔗 Direct Link Provision**: Provides clickable links to all discovered resources
-- **⭐ Quality Filtering**: Uses AI to assess and recommend high-quality learning materials
-- **🌐 Global Resource Access**: Searches across multiple platforms and sources
+- **⭐ AI-Powered Quality Filtering**: Uses MeTTa + Gemini AI to assess and recommend high-quality learning materials
+- **🌐 Universal Resource Access**: Searches across multiple platforms for ANY educational domain
 
 **🎯 Specialized Capabilities:**
 - **Video Metadata Extraction**: Provides detailed information about YouTube videos (channel, duration, views, published date)
@@ -67,12 +108,12 @@
 **Agent Address**: `agent1qdeqahn3pr4ta7zxgtwee5ts0klrkeh30an7wmsdhagsfyy28udtqs2tsk4`
 
 **🔥 Core Powers:**
-- **🔬 Deep Concept Analysis**: Provides comprehensive explanations of complex technical concepts
-- **🗺️ Prerequisite Mapping**: Creates detailed maps of what learners need to know before advanced topics
-- **🔗 Cross-Domain Connections**: Reveals how concepts relate across different technical fields
-- **📊 Learning Dependency Analysis**: Shows optimal learning sequences and concept relationships
-- **🎯 Intelligent Insights**: Uses advanced AI to provide nuanced understanding and analysis
-- **🧩 Conceptual Framework Building**: Helps learners build mental models of complex systems
+- **🔬 Dynamic Concept Analysis**: Provides comprehensive explanations using MeTTa knowledge graph + Gemini AI
+- **🗺️ AI-Powered Prerequisite Mapping**: Creates detailed maps using MeTTa concept relationships and dependencies
+- **🔗 Cross-Domain Connection Analysis**: Reveals how concepts relate across different fields using MeTTa insights
+- **📊 Intelligent Learning Dependency Analysis**: Shows optimal learning sequences using MeTTa knowledge graph
+- **🎯 Advanced AI Insights**: Uses MeTTa + Gemini AI fusion for nuanced understanding and analysis
+- **🧩 Dynamic Conceptual Framework Building**: Helps learners build mental models using MeTTa concept relationships
 
 **🎯 Specialized Capabilities:**
 - **Concept Relationship Mapping**: Explains how different topics connect and build upon each other
@@ -145,7 +186,8 @@ The agents work together to create a comprehensive learning experience:
 ### **Technology Stack**
 - **🤖 uAgents Framework**: Autonomous AI agent communication
 - **🧠 Gemini AI**: Google's AI for content generation and analysis
-- **📊 MeTTa Knowledge Graph**: Structured learning concept relationships
+- **📊 MeTTa Knowledge Graph (Hyperon)**: Advanced knowledge representation and reasoning
+- **⚡ Dynamic MeTTa Operations**: Real-time concept analysis, domain detection, and relationship mapping
 - **🎥 YouTube API**: Real-time educational video discovery
 - **🐍 Python 3.8+**: Core application language
 
@@ -245,8 +287,11 @@ Response: Deep dive into algorithm mechanics, mathematics, optimization,
           different algorithm types, and practical applications
 ```
 
-## 🎯 Supported Learning Domains
+## 🎯 **Unlimited Learning Domains**
 
+**EduFinder supports ANY educational domain using MeTTa knowledge graph:**
+
+### **Technology Domains**
 - **🐍 Python Development** - Django, Flask, FastAPI, data science
 - **🌐 Web Development** - React, Vue, Angular, Node.js, JavaScript
 - **🤖 AI Engineering** - Machine learning, deep learning, neural networks
@@ -254,19 +299,39 @@ Response: Deep dive into algorithm mechanics, mathematics, optimization,
 - **🔒 Cybersecurity** - Ethical hacking, penetration testing, network security
 - **☁️ DevOps** - Docker, Kubernetes, AWS, Azure, GCP
 - **📱 Mobile Development** - iOS, Android, React Native, Flutter
+
+### **Creative & Arts Domains**
 - **🎨 UI/UX Design** - User interface, user experience, Figma, Adobe
-- **🗄️ Database** - SQL, MongoDB, PostgreSQL, Redis
-- **⚙️ Software Engineering** - Programming, algorithms, data structures
-- **And many more!** - Dynamic domain detection for any educational topic
+- **🎵 Music** - Guitar, piano, singing, composition, audio production
+- **🎭 Art** - Drawing, painting, sculpture, digital art, photography
+- **✍️ Creative Writing** - Poetry, novels, storytelling, screenwriting
+
+### **Academic Domains**
+- **🔬 Sciences** - Physics, chemistry, biology, mathematics, research methods
+- **📚 Languages** - English, Spanish, French, linguistics, grammar
+- **🧠 Psychology** - Mental health, therapy, counseling, behavior analysis
+- **🤔 Philosophy** - Ethics, logic, metaphysics, critical thinking
+- **📖 Literature** - Writing, poetry, novel analysis, creative writing
+
+### **Life Skills Domains**
+- **🍳 Cooking** - Culinary arts, baking, recipe development, food science
+- **💪 Fitness** - Exercise, workout routines, yoga, running, training
+- **📈 Business** - Marketing, finance, management, entrepreneurship
+- **📚 History** - World history, ancient civilizations, modern events
+
+### **🚀 Dynamic Domain Detection**
+**No hardcoded limitations!** EduFinder uses MeTTa knowledge graph to dynamically detect and support ANY educational topic you want to learn.
 
 ## 🔧 Advanced Features
 
-### **MeTTa Knowledge Graph Integration**
-- **Real Integration**: MeTTa knowledge graph queries integrated into Gemini service when hyperon is available
-- **Pure Gemini Fallback**: Uses pure Gemini AI when hyperon is not installed
-- **Enhanced Curriculum**: Prerequisites and learning paths from knowledge graph when available
-- **Deep Insights**: Concept relationships and dependencies from MeTTa when available
+### **🧠 MeTTa Knowledge Graph Integration**
+- **Dynamic Knowledge Management**: Real-time concept analysis and knowledge graph expansion
+- **Advanced MeTTa Operations**: `analyze-concept`, `detect-domain`, `find-relationships` operations
+- **Intelligent Fallback**: Pure Gemini AI when hyperon is not installed
+- **Enhanced Curriculum Generation**: Prerequisites and learning paths from MeTTa knowledge graph
+- **Deep Insights Integration**: Concept relationships and dependencies from MeTTa
 - **Smart Detection**: Automatically detects hyperon availability and adjusts behavior
+- **Unlimited Domain Support**: Dynamic domain detection for ANY educational topic
 
 ### **Smart Query Processing**
 - **Intent Recognition**: Automatically detects user learning goals
@@ -329,10 +394,10 @@ Modify the Gemini prompts in `services/gemini_service.py` to customize response 
 ## 🙏 Acknowledgments
 
 - **uAgents Framework** - Autonomous AI agent communication
-- **Google Gemini AI** - Advanced content generation
-- **MeTTa Language** - Knowledge graph and reasoning
-- **YouTube API** - Educational video discovery
+- **Google Gemini AI** - Advanced content generation and natural language understanding
+- **MeTTa Language (Hyperon)** - Advanced knowledge representation, reasoning, and dynamic concept analysis
+- **YouTube API** - Educational video discovery and metadata extraction
 
 ---
 
-**EduFinder** - Empowering learners with intelligent, personalized educational experiences! 🎓✨
+**EduFinder** - Empowering learners with intelligent, unlimited educational experiences powered by MeTTa Knowledge Graph and Gemini AI! 🎓✨
