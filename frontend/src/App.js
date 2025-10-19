@@ -54,13 +54,20 @@ function App() {
           </div>
           <div className="header-text">
             <h1>🚀 EduFinder</h1>
-            <p className="elevator-pitch">
-              Transform your learning journey with AI-powered educational agents. 
-              Get personalized curricula, discover resources, and gain deep insights 
-              across any technical domain - all powered by cutting-edge AI technology.
-            </p>
           </div>
           <div className="header-actions">
+            <a 
+              href="https://github.com/neuralnex/eduFinder" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="github-link"
+              title="View on GitHub"
+            >
+              <svg className="github-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+              </svg>
+              GitHub
+            </a>
             <a 
               href="http://asi1.ai/chat" 
               target="_blank" 
@@ -72,6 +79,36 @@ function App() {
           </div>
         </div>
       </header>
+
+      <section className="elevator-pitch-section">
+        <div className="elevator-pitch-container">
+          <h2 className="pitch-hook">🎯 Stop Wasting Time on Random Tutorials!</h2>
+          <p className="elevator-pitch">
+            <strong>EduFinder is the world's first AI-powered learning orchestrator</strong> that creates personalized educational journeys for ANY domain. 
+            Whether you want to master Python, learn quantum physics, or become a professional chef - our advanced MeTTa Knowledge Graph 
+            and Gemini AI work together to map your exact learning path, discover the perfect resources, and accelerate your mastery 
+            with unprecedented precision. <span className="highlight">No more guesswork. No more wasted time. Just pure, intelligent learning.</span>
+          </p>
+          <div className="pitch-stats">
+            <div className="stat-item">
+              <span className="stat-number">∞</span>
+              <span className="stat-label">Domains Supported</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">⚡</span>
+              <span className="stat-label">Real-time AI</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">🧠</span>
+              <span className="stat-label">Smart Prerequisites</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-number">🎯</span>
+              <span className="stat-label">Personalized Paths</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <main className="app-main">
         <section className="search-section">
@@ -135,20 +172,20 @@ function App() {
                       className="agent-image"
                     />
                   </a>
-                  <h3>{key.replace('_', ' ').toUpperCase()}</h3>
+                  <h3>{key === 'main_agent' ? 'LEARNINGPATH' : key.replace('_', ' ').toUpperCase()}</h3>
                   
                   <div className="agent-description">
                     {key === 'main_agent' && (
-                      <p>Main routing agent that coordinates all learning requests and provides intelligent query analysis.</p>
+                      <p><strong>Powerful Learning Orchestrator:</strong> Advanced AI routing system that intelligently coordinates all learning requests, analyzes complex queries, and directs you to the most effective learning resources with unprecedented precision.</p>
                     )}
                     {key === 'curriculum_agent' && (
-                      <p>Creates structured learning paths and educational curricula tailored to your specific goals and skill level.</p>
+                      <p><strong>Master Curriculum Architect:</strong> Harnesses cutting-edge AI to craft highly personalized, structured learning paths and comprehensive educational curricula perfectly tailored to your unique goals, skill level, and learning style.</p>
                     )}
                     {key === 'materials_agent' && (
-                      <p>Discovers and curates learning resources including videos, courses, documentation, and hands-on projects.</p>
+                      <p><strong>Supreme Resource Discovery Engine:</strong> Leverages powerful AI algorithms to discover, curate, and recommend the finest learning resources including premium videos, courses, documentation, and hands-on projects from across the web.</p>
                     )}
                     {key === 'enhanced_agent' && (
-                      <p>Provides deep insights, concept analysis, and learning dependencies to accelerate your understanding.</p>
+                      <p><strong>Deep Learning Intelligence:</strong> Provides profound insights, advanced concept analysis, and comprehensive learning dependency mapping to dramatically accelerate your understanding and mastery of complex topics.</p>
                     )}
                   </div>
                   
@@ -183,31 +220,71 @@ function App() {
           </div>
         </section>
 
-        <section className="actions-section">
-          <h2>🎯 Quick Actions</h2>
-          <div className="actions-grid">
-            <button className="action-btn primary">
-              📚 Start Learning
-            </button>
-            <button className="action-btn secondary">
-              🔍 Find Resources
-            </button>
-            <button className="action-btn tertiary">
-              🧠 Get Insights
-            </button>
-          </div>
-        </section>
       </main>
 
       <footer className="app-footer">
-        <p>Powered by uAgents Framework & Gemini AI</p>
-        <div className="footer-links">
-          <a href="https://agentverse.ai" target="_blank" rel="noopener noreferrer">
-            AgentVerse
-          </a>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
+        <div className="tech-stack">
+          <h3>🚀 Technology Stack</h3>
+          <div className="tech-grid">
+            <div className="tech-category">
+              <h4>AI & Machine Learning</h4>
+              <ul>
+                <li>Google Gemini AI</li>
+                <li>MeTTa Knowledge Graph</li>
+                <li>Advanced NLP Processing</li>
+                <li>Intelligent Query Analysis</li>
+                <li>Personalized Learning Algorithms</li>
+              </ul>
+            </div>
+            <div className="tech-category">
+              <h4>Agent Framework</h4>
+              <ul>
+                <li>uAgents Framework</li>
+                <li>Multi-Agent Architecture</li>
+                <li>Real-time Communication</li>
+                <li>Distributed Processing</li>
+              </ul>
+            </div>
+            <div className="tech-category">
+              <h4>Frontend & UI</h4>
+              <ul>
+                <li>React.js</li>
+                <li>Modern CSS3</li>
+                <li>Responsive Design</li>
+                <li>Interactive Components</li>
+              </ul>
+            </div>
+            <div className="tech-category">
+              <h4>Backend & Infrastructure</h4>
+              <ul>
+                <li>Python FastAPI</li>
+                <li>AgentVerse Platform</li>
+                <li>Cloud Infrastructure</li>
+                <li>Scalable Architecture</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div className="footer-bottom">
+          <p>Powered by uAgents Framework & Gemini AI | Built with cutting-edge technology for the future of education</p>
+          <div className="footer-links">
+            <a href="https://agentverse.ai" target="_blank" rel="noopener noreferrer">
+              AgentVerse
+            </a>
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+              GitHub
+            </a>
+            <a href="https://ai.google.dev/gemini-api" target="_blank" rel="noopener noreferrer">
+              Gemini AI
+            </a>
+            <a href="https://metta-lang.dev" target="_blank" rel="noopener noreferrer">
+              MeTTa Lang
+            </a>
+            <a href="https://uagents.readthedocs.io" target="_blank" rel="noopener noreferrer">
+              uAgents Docs
+            </a>
+          </div>
         </div>
       </footer>
     </div>
