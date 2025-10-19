@@ -148,23 +148,23 @@ class DynamicMeTTaKnowledgeGraph:
             # Query the concept data
             definition_pattern = E(S("definition"), S(concept_key), V("def"))
             definition_result = self.metta.space().query(definition_pattern)
-            definition = str(definition_result[0]["def"]) if definition_result else f"Dynamic analysis of {concept}"
+            definition = str(definition_result[0]["def"]) if definition_result and not definition_result.is_empty() else f"Dynamic analysis of {concept}"
             
             prereq_pattern = E(S("prerequisite"), S(concept_key), V("prereq"))
             prereq_result = self.metta.space().query(prereq_pattern)
-            prerequisites = [str(binding["prereq"]) for binding in prereq_result] if prereq_result else []
+            prerequisites = [str(binding["prereq"]) for binding in prereq_result] if prereq_result and not prereq_result.is_empty() else []
             
             related_pattern = E(S("related_concept"), S(concept_key), V("related"))
             related_result = self.metta.space().query(related_pattern)
-            related_concepts = [str(binding["related"]) for binding in related_result] if related_result else []
+            related_concepts = [str(binding["related"]) for binding in related_result] if related_result and not related_result.is_empty() else []
             
             difficulty_pattern = E(S("difficulty"), S(concept_key), V("diff"))
             difficulty_result = self.metta.space().query(difficulty_pattern)
-            difficulty = str(difficulty_result[0]["diff"]) if difficulty_result else "Intermediate"
+            difficulty = str(difficulty_result[0]["diff"]) if difficulty_result and not difficulty_result.is_empty() else "Intermediate"
             
             time_pattern = E(S("time_estimate"), S(concept_key), V("time"))
             time_result = self.metta.space().query(time_pattern)
-            time_estimate = str(time_result[0]["time"]) if time_result else "2-4 weeks"
+            time_estimate = str(time_result[0]["time"]) if time_result and not time_result.is_empty() else "2-4 weeks"
             
             return {
                 "concept": concept,
@@ -268,7 +268,7 @@ class DynamicMeTTaKnowledgeGraph:
             try:
                 # Use MeTTa's domain detection operation
                 result = self.metta.run(f'!(detect-domain "{query}")')
-                if result and len(result) > 0:
+                if result and len(result) > 0 and len(result[0]) > 0:
                     return str(result[0][0])
             except Exception as e:
                 print(f"MeTTa domain detection error: {e}")
