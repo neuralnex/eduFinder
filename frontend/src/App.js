@@ -53,7 +53,7 @@ function App() {
             <img src="/images/logo.svg" alt="EduFinder Logo" className="logo" />
           </div>
           <div className="header-text">
-            <h1>🚀 EduFinder</h1>
+            <h1>EduFinder</h1>
           </div>
           <div className="header-actions">
             <a 
