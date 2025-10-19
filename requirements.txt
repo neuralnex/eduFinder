@@ -2,10 +2,13 @@ uagents
 httpx
 pydantic
 python-dotenv
-youtube-search-python
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
 requests
 aiohttp
 hyperon
 google-genai
 multiprocessing-logging
 gunicorn
+youtube-search-python

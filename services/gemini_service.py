@@ -12,7 +12,8 @@ except ImportError:
     GEMINI_AVAILABLE = False
 
 try:
-    from youtubesearchpython import VideosSearch
+    from googleapiclient.discovery import build
+    from googleapiclient.errors import HttpError
     YOUTUBE_AVAILABLE = True
 except ImportError:
     YOUTUBE_AVAILABLE = False
@@ -312,27 +313,65 @@ class GeminiLearningService:
             return self._get_fallback_insights(concept, domain)
 
     async def search_youtube_videos(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
-        if not self.youtube_available:
+        import os
+        current_key = os.getenv('YOUTUBE_API_KEY')
+        
+        if not self.youtube_available or not current_key or current_key == 'invalid_key':
+            print("[YOUTUBE API] Not available - returning empty list")
             return []
         
         try:
-            videosSearch = VideosSearch(query, limit=limit)
-            results = videosSearch.result()
+            youtube = build('youtube', 'v3', developerKey=current_key)
+            
+            search_response = youtube.search().list(
+                q=query,
+                part='id,snippet',
+                maxResults=limit,
+                type='video',
+                order='relevance',
+                videoDuration='medium',
+                videoDefinition='high'
+            ).execute()
             
             video_list = []
-            for video in results.get('result', []):
-                video_list.append({
-                    "title": video.get('title', 'Unknown Title'),
-                    "channel": video.get('channel', {}).get('name', 'Unknown Channel'),
-                    "duration": video.get('duration', 'Unknown Duration'),
-                    "views": video.get('viewCount', {}).get('text', 'Unknown Views'),
-                    "url": video.get('link', ''),
-                    "description": video.get('descriptionSnippet', [{}])[0].get('text', '')[:100] + '...' if video.get('descriptionSnippet') else '',
-                    "published": video.get('publishedTime', 'Unknown Date')
-                })
+            video_ids = []
+            
+            for search_result in search_response.get('items', []):
+                video_ids.append(search_result['id']['videoId'])
+            
+            if video_ids:
+                video_response = youtube.videos().list(
+                    part='snippet,statistics,contentDetails',
+                    id=','.join(video_ids)
+                ).execute()
+                
+                for video in video_response.get('items', []):
+                    snippet = video['snippet']
+                    statistics = video['statistics']
+                    content_details = video['contentDetails']
+                    
+                    video_list.append({
+                        "title": snippet.get('title', 'Unknown Title'),
+                        "channel": snippet.get('channelTitle', 'Unknown Channel'),
+                        "duration": content_details.get('duration', 'Unknown Duration'),
+                        "views": f"{int(statistics.get('viewCount', 0)):,} views",
+                        "url": f"https://www.youtube.com/watch?v={video['id']}",
+                        "description": snippet.get('description', '')[:100] + '...' if snippet.get('description') else '',
+                        "published": snippet.get('publishedAt', 'Unknown Date')[:10]
+                    })
+            
+            print(f"[YOUTUBE API] Found {len(video_list)} videos for query: {query}")
             return video_list
+            
+        except HttpError as e:
+            print(f"[YOUTUBE API] HTTP Error: {e}")
+            if e.resp.status == 403:
+                print("[YOUTUBE API] Quota exceeded or API disabled")
+            elif e.resp.status == 400:
+                print("[YOUTUBE API] Invalid request parameters")
+            return []
         except Exception as e:
-            print(f"YouTube search error: {e}")
+            print(f"[YOUTUBE API] Unexpected error: {e}")
             return []
 
     def _get_fallback_curriculum(self, domain: str) -> str:
@@ -426,10 +465,11 @@ I can help you find specific resources and videos for each module!
 **Learning Resources for {topic} in {domain.title()}**
 
 **Essential Links:**
-• **Documentation**: https://docs.python.org/ (Python), https://developer.mozilla.org/ (Web)
-• **Tutorials**: https://www.w3schools.com/, https://www.tutorialspoint.com/
-• **Practice**: https://leetcode.com/, https://www.hackerrank.com/
-• **Courses**: https://www.coursera.org/, https://www.edx.org/, https://www.udemy.com/
+• **Documentation**: Python Docs (docs.python.org), MDN Web Docs (developer.mozilla.org)
+• **Tutorials**: W3Schools (w3schools.com), TutorialsPoint (tutorialspoint.com)
+• **Practice**: LeetCode (leetcode.com), HackerRank (hackerrank.com), Codewars (codewars.com)
+• **Courses**: Coursera (coursera.org), edX (edx.org), Udemy (udemy.com)
+• **Interactive Learning**: Codecademy (codecademy.com), freeCodeCamp (freecodecamp.org)
 
 **Recommended Approach:**
 1. Start with foundational concepts

@@ -170,10 +170,11 @@ What resources do you need? Just tell me what you want to learn and I'll find th
                         response += "\n"
                     
                     response += "**Additional Learning Resources:**\n"
-                    response += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
-                    response += "• **Practice Platforms**: https://leetcode.com/, https://www.hackerrank.com/\n"
-                    response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
-                    response += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
+                    response += "• **Free Courses**: Coursera (coursera.org), edX (edx.org), Khan Academy (khanacademy.org)\n"
+                    response += "• **Practice Platforms**: LeetCode (leetcode.com), HackerRank (hackerrank.com), Codewars (codewars.com)\n"
+                    response += "• **Documentation**: Python Docs (docs.python.org), MDN Web Docs (developer.mozilla.org)\n"
+                    response += "• **Community**: Reddit (reddit.com/r/learnprogramming), Stack Overflow (stackoverflow.com)\n"
+                    response += "• **Interactive Learning**: Codecademy (codecademy.com), freeCodeCamp (freecodecamp.org)\n"
                 
                 print(f"[MATERIALS AGENT] Materials generated, sending response...")
                 response_message = create_text_chat(response)

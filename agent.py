@@ -153,7 +153,7 @@ What would you like to learn today?
             
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
             if any(greeting in user_input for greeting in greeting_words):
-                greeting_response = """
+                response = """
 Hello! Welcome to EduFinder - Your AI-Powered Learning Companion!
 
 I'm your comprehensive learning assistant that can help you with:
@@ -166,8 +166,6 @@ I work with specialized AI agents to provide you with personalized educational e
 
 What would you like to learn today?
                 """
-                response_message = create_text_chat(greeting_response)
-                await ctx.send(sender, response_message)
             elif any(keyword in user_input for keyword in ["teach me", "learn", "educational plan", "learning plan", "study plan", "curriculum", "learning path", "create a", "help me learn"]):
                 topic = _extract_topic_from_query(item.text)
                 domain = _extract_domain_from_query(item.text)
