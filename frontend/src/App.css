@@ -23,7 +23,7 @@ body {
 .app-header {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
-  padding: 2rem 0;
+  padding: 1rem 0;
   border-bottom: 1px solid rgba(51, 65, 85, 0.8);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -37,17 +37,19 @@ body {
   padding: 0 2rem;
 }
 
-.header-text {
-  flex: 1;
-  text-align: center;
+.logo-section {
+  flex-shrink: 0;
 }
 
-.app-header h1 {
-  font-size: 2.5rem;
-  font-weight: 300;
-  color: #f1f5f9;
-  letter-spacing: -0.02em;
-  margin: 0;
+.logo {
+  height: 40px;
+  width: auto;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .header-actions {
@@ -556,17 +558,16 @@ body {
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
-    text-align: center;
-    gap: 1.5rem;
+    gap: 1rem;
   }
   
-  .app-header h1 {
-    font-size: 2rem;
+  .logo {
+    height: 32px;
   }
   
   .header-actions {
-    flex-direction: column;
-    gap: 0.75rem;
+    flex-direction: row;
+    gap: 1rem;
   }
   
   .elevator-pitch-section {

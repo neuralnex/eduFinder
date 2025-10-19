@@ -52,9 +52,6 @@ function App() {
           <div className="logo-section">
             <img src="/images/logo.svg" alt="EduFinder Logo" className="logo" />
           </div>
-          <div className="header-text">
-            <h1>EduFinder</h1>
-          </div>
           <div className="header-actions">
             <a 
               href="https://github.com/neuralnex/eduFinder" 
@@ -281,7 +278,7 @@ function App() {
             <a href="https://metta-lang.dev" target="_blank" rel="noopener noreferrer">
               MeTTa Lang
             </a>
-            <a href="https://uagents.readthedocs.io" target="_blank" rel="noopener noreferrer">
+            <a href="https://innovationlab.fetch.ai/resources/docs/examples/chat-protocol/asi-compatible-uagents" target="_blank" rel="noopener noreferrer">
               uAgents Docs
             </a>
           </div>
