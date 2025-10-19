@@ -95,6 +95,7 @@ def _extract_domain_from_query(query: str) -> str:
 
 @learning_chat_proto.on_message(ChatMessage)
 async def handle_learning_message(ctx: Context, sender: str, msg: ChatMessage):
+    print(f"[MAIN AGENT] Received message from {sender}")
     ctx.logger.info(f"Received message from {sender}")
     
     await ctx.send(sender, ChatAcknowledgement(
@@ -146,6 +147,7 @@ What would you like to learn today?
             await ctx.send(sender, welcome_message)
             
         elif isinstance(item, TextContent):
+            print(f"[MAIN AGENT] Processing text message: {item.text[:50]}...")
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             user_input = item.text.lower()
             
@@ -174,6 +176,7 @@ What would you like to learn today?
                 request_id = f"educational_plan_{int(time.time())}_{topic}_{domain}"
                 pending_requests[request_id] = sender
                 
+                print(f"[MAIN AGENT] Routing to CURRICULUM AGENT for topic: {topic}, domain: {domain}")
                 await ctx.send(CURRICULUM_AGENT_ADDRESS, CurriculumRequest(
                     domain=domain,
                     user_query=item.text,
@@ -190,6 +193,7 @@ What would you like to learn today?
                 request_id = f"materials_{int(time.time())}_{topic}_{domain}"
                 pending_requests[request_id] = sender
                 
+                print(f"[MAIN AGENT] Routing to MATERIALS AGENT for topic: {topic}, domain: {domain}")
                 await ctx.send(MATERIALS_AGENT_ADDRESS, MaterialsRequest(
                     topic=topic,
                     domain=domain,
@@ -208,6 +212,7 @@ What would you like to learn today?
                 request_id = f"insights_{int(time.time())}_{concept}_{domain}"
                 pending_requests[request_id] = sender
                 
+                print(f"[MAIN AGENT] Routing to ENHANCED AGENT for concept: {concept}, domain: {domain}")
                 await ctx.send(ENHANCED_AGENT_ADDRESS, InsightsRequest(
                     concept=concept,
                     domain=domain,

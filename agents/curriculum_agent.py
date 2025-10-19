@@ -89,6 +89,7 @@ What would you like to learn about?
             await ctx.send(sender, welcome_message)
             
         elif isinstance(item, TextContent):
+            print(f"[CURRICULUM AGENT] Processing request: {item.text[:50]}...")
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
@@ -103,8 +104,10 @@ What would you like to learn about? Just tell me your learning goals and I'll cr
                 response_message = create_text_chat(greeting_response)
                 await ctx.send(sender, response_message)
             else:
+                print(f"[CURRICULUM AGENT] Generating curriculum using Gemini + MeTTa...")
                 response = await gemini_service.generate_curriculum("general", item.text)
                 
+                print(f"[CURRICULUM AGENT] Curriculum generated, sending response...")
                 response_message = create_text_chat(response)
                 await ctx.send(sender, response_message)
             

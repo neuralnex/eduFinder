@@ -40,9 +40,13 @@ def start_agent(agent_file, delay=0):
         print(f"{agent_file} started (PID: {process.pid})")
         
         def log_reader():
-            for line in iter(process.stdout.readline, ''):
-                if line:
-                    print(f"[{agent_file}] {line.rstrip()}")
+            try:
+                for line in iter(process.stdout.readline, ''):
+                    if line:
+                        timestamp = time.strftime("%H:%M:%S")
+                        print(f"[{timestamp}] [{agent_file}] {line.rstrip()}")
+            except Exception as e:
+                print(f"Log reader error for {agent_file}: {e}")
         
         log_thread = threading.Thread(target=log_reader, daemon=True)
         log_thread.start()

@@ -133,6 +133,7 @@ What resources do you need?
             await ctx.send(sender, welcome_message)
             
         elif isinstance(item, TextContent):
+            print(f"[MATERIALS AGENT] Processing request: {item.text[:50]}...")
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
@@ -149,9 +150,10 @@ What resources do you need? Just tell me what you want to learn and I'll find th
             else:
                 topic = _extract_topic_from_query(item.text)
                 domain = _extract_domain_from_query(item.text)
+                print(f"[MATERIALS AGENT] Generating materials for topic: {topic}, domain: {domain}")
                 response = await gemini_service.generate_learning_materials(topic, domain, item.text)
                 
-                # Always include YouTube videos for better learning experience
+                print(f"[MATERIALS AGENT] Searching YouTube videos...")
                 search_query = topic.replace("_", " ") + " tutorial"
                 videos = await gemini_service.search_youtube_videos(search_query, 5)
                 if videos:
@@ -173,6 +175,7 @@ What resources do you need? Just tell me what you want to learn and I'll find th
                     response += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
                     response += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
                 
+                print(f"[MATERIALS AGENT] Materials generated, sending response...")
                 response_message = create_text_chat(response)
                 await ctx.send(sender, response_message)
             

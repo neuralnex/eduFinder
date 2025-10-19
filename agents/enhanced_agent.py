@@ -133,6 +133,7 @@ What would you like to understand deeply?
             await ctx.send(sender, welcome_message)
             
         elif isinstance(item, TextContent):
+            print(f"[ENHANCED AGENT] Processing request: {item.text[:50]}...")
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
@@ -149,8 +150,10 @@ What would you like to understand deeply? I'm here to provide comprehensive insi
             else:
                 concept = _extract_topic_from_query(item.text)
                 domain = _extract_domain_from_query(item.text)
+                print(f"[ENHANCED AGENT] Generating insights for concept: {concept}, domain: {domain}")
                 response = await gemini_service.generate_deep_insights(concept, domain, item.text)
                 
+                print(f"[ENHANCED AGENT] Insights generated, sending response...")
                 response_message = create_text_chat(response)
                 await ctx.send(sender, response_message)
             
