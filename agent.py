@@ -18,6 +18,7 @@ from uagents_core.contrib.protocols.chat import (
 
 from config import AGENT_SEED, AGENT_NAME, AGENT_DESCRIPTION, CURRICULUM_AGENT_SEED, MATERIALS_AGENT_SEED, ENHANCED_AGENT_SEED
 from services.gemini_service import GeminiLearningService
+from services.user_context import user_context_manager
 from models import Request, Response, CurriculumRequest, MaterialsRequest, InsightsRequest, CurriculumResponse, MaterialsResponse, InsightsResponse
 
 learning_agent = Agent(
@@ -106,41 +107,39 @@ async def handle_learning_message(ctx: Context, sender: str, msg: ChatMessage):
     for item in msg.content:
         if isinstance(item, StartSessionContent):
             ctx.logger.info(f"Session started with {sender}")
-            welcome_message = create_text_chat("""
-**Welcome to EduFinder - Your Unlimited AI Learning Companion!**
+            
+            user_context = user_context_manager.get_context(sender)
+            user_context.session_count += 1
+            user_context_manager.save_contexts()
+            
+            personalized_greeting = user_context_manager.get_personalized_greeting(sender)
+            
+            welcome_message = create_text_chat(f"""
+{personalized_greeting}
 
-I'm your dynamic learning assistant powered by **MeTTa Knowledge Graph** and **Gemini AI** that can handle ANY educational topic or domain!
+**I'm EduFinder - Your Intelligent Learning Companion!**
 
-**What I can help you with:**
-• **Dynamic Curriculum Creation** - AI-powered learning paths for ANY subject
-• **Intelligent Resource Discovery** - Real-time educational content discovery
-• **Deep Conceptual Insights** - Advanced reasoning and concept relationships
-• **Unlimited Domain Support** - From programming to philosophy, cooking to quantum physics!
+I'm powered by **MeTTa Knowledge Graph** and **Gemini AI** and I remember our conversations to provide personalized learning experiences.
 
-**Supported Learning Domains (Unlimited!):**
-• **Technology**: Programming, AI, Web3, Data Science, DevOps, Cybersecurity
-• **Creative Arts**: Design, Music, Art, Photography, Creative Writing
-• **Sciences**: Physics, Chemistry, Biology, Mathematics, Research Methods
-• **Languages**: English, Spanish, French, Linguistics, Grammar
-• **Life Skills**: Cooking, Fitness, Psychology, Philosophy, History
-• **Business**: Marketing, Finance, Management, Entrepreneurship
-• **And ANYTHING else you want to learn!**
+**What makes me special:**
+• **I remember you** - Your learning level, preferences, and goals
+• **Adaptive Learning** - Content adjusts to your skill level and pace
+• **Conversational Intelligence** - I understand context and build on our previous discussions
+• **Unlimited Domains** - From programming to philosophy, cooking to quantum physics!
 
-**Powered by Advanced AI:**
-• **MeTTa Knowledge Graph** - Dynamic concept analysis and relationships
-• **Gemini AI** - Natural language understanding and generation
-• **Real-time Learning** - Adapts to any topic instantly
-• **Intelligent Reasoning** - Deep insights and personalized guidance
+**I can help you with:**
+• **Personalized Curricula** - Learning paths tailored to your level and goals
+• **Smart Resource Discovery** - Materials that match your learning style
+• **Deep Conceptual Insights** - Understanding how topics connect and relate
+• **Progress Tracking** - I remember what you've learned and what's next
 
-**Try asking me ANYTHING:**
-- "Teach me quantum physics" (curriculum creation)
-- "Find resources for learning Spanish" (resource discovery)  
-- "Explain the philosophy of ethics" (deep insights)
-- "Create a learning path for cooking Italian cuisine"
-- "Help me understand machine learning algorithms"
-- "I want to learn guitar from scratch"
+**Just tell me:**
+- What you want to learn
+- Your current level (beginner/intermediate/advanced)
+- Your learning goals
+- Any specific preferences
 
-**No limits, no boundaries - just pure learning power!**
+I'll create a personalized learning experience just for you!
 
 What would you like to learn today?
             """)
@@ -151,24 +150,42 @@ What would you like to learn today?
             ctx.logger.info(f"Text message from {sender}: {item.text}")
             user_input = item.text.lower()
             
+            user_context = user_context_manager.get_context(sender)
+            
+            learning_level = user_context_manager.assess_learning_level(sender, item.text)
+            learning_goals = user_context_manager.extract_learning_goals(sender, item.text)
+            
+            if learning_level != "unknown":
+                user_context_manager.update_context(sender, learning_level=learning_level)
+            
+            if learning_goals:
+                user_context_manager.update_context(sender, learning_goals=learning_goals)
+            
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
             if any(greeting in user_input for greeting in greeting_words):
-                response = """
-Hello! Welcome to EduFinder - Your AI-Powered Learning Companion!
+                personalized_greeting = user_context_manager.get_personalized_greeting(sender)
+                response = f"""
+{personalized_greeting}
 
 I'm your comprehensive learning assistant that can help you with:
 
-**Curriculum Creation** - Structured learning paths for any tech domain
-**Resource Discovery** - Educational videos, courses, books, and projects with links  
-**Deep Insights** - Concept relationships and learning dependencies
+**Personalized Learning Support:**
+• **Curriculum Creation** - Structured learning paths tailored to your level
+• **Resource Discovery** - Educational materials that match your learning style  
+• **Deep Insights** - Concept relationships and learning dependencies
+• **Progress Tracking** - I remember what you've learned and what's next
 
-I work with specialized AI agents to provide you with personalized educational experiences. Just tell me what you want to learn about, and I'll route your request to the right specialist!
+I work with specialized AI agents to provide you with personalized educational experiences. Just tell me what you want to learn about, your current level, and your goals, and I'll create the perfect learning plan for you!
 
 What would you like to learn today?
                 """
             elif any(keyword in user_input for keyword in ["teach me", "learn", "educational plan", "learning plan", "study plan", "curriculum", "learning path", "create a", "help me learn"]):
                 topic = _extract_topic_from_query(item.text)
                 domain = _extract_domain_from_query(item.text)
+                
+                user_context_manager.update_context(sender, current_topic=topic, current_domain=domain)
+                
+                adaptive_prefix = user_context_manager.get_adaptive_response_prefix(sender, topic.replace('_', ' '))
                 
                 import time
                 request_id = f"educational_plan_{int(time.time())}_{topic}_{domain}"
@@ -181,11 +198,15 @@ What would you like to learn today?
                     original_sender=sender,
                     request_id=request_id
                 ))
-                response = f"Creating your comprehensive educational plan for {topic.replace('_', ' ').title()}..."
+                response = f"{adaptive_prefix}Creating your personalized educational plan for {topic.replace('_', ' ').title()}..."
                 
             elif any(keyword in user_input for keyword in ["resources", "find", "get me", "show me", "videos", "courses", "books", "tutorials", "materials"]):
                 topic = _extract_topic_from_query(item.text)
                 domain = _extract_domain_from_query(item.text)
+                
+                user_context_manager.update_context(sender, current_topic=topic, current_domain=domain)
+                
+                adaptive_prefix = user_context_manager.get_adaptive_response_prefix(sender, topic.replace('_', ' '))
                 
                 import time
                 request_id = f"materials_{int(time.time())}_{topic}_{domain}"
@@ -200,11 +221,15 @@ What would you like to learn today?
                     original_sender=sender,
                     request_id=request_id
                 ))
-                response = f"Finding targeted resources for {topic.replace('_', ' ').title()}..."
+                response = f"{adaptive_prefix}Finding personalized resources for {topic.replace('_', ' ').title()} that match your learning style..."
                 
             elif any(keyword in user_input for keyword in ["explain", "how does", "what is", "concept", "relationship", "prerequisite", "deep insights"]):
                 concept = _extract_topic_from_query(item.text)
                 domain = _extract_domain_from_query(item.text)
+                
+                user_context_manager.update_context(sender, current_topic=concept, current_domain=domain)
+                
+                adaptive_prefix = user_context_manager.get_adaptive_response_prefix(sender, concept.replace('_', ' '))
                 
                 import time
                 request_id = f"insights_{int(time.time())}_{concept}_{domain}"
@@ -219,7 +244,7 @@ What would you like to learn today?
                     original_sender=sender,
                     request_id=request_id
                 ))
-                response = f"Generating deep insights about {concept.replace('_', ' ').title()}..."
+                response = f"{adaptive_prefix}Generating deep insights about {concept.replace('_', ' ').title()} tailored to your understanding level..."
                 
             elif "help" in user_input or "what can you do" in user_input:
                 response = """

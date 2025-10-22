@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import subprocess
 import time
@@ -190,7 +189,6 @@ def application(environ, start_response):
 def trigger_root_endpoint():
     """Trigger the root GET endpoint to restart agents and keep Render awake"""
     try:
-        # Get the port from environment variable or use default
         port = os.environ.get('PORT', '8000')
         url = f"http://localhost:{port}/"
         
@@ -198,25 +196,24 @@ def trigger_root_endpoint():
         response = requests.get(url, timeout=10)
         
         if response.status_code == 200:
-            print(f"[{time.strftime('%H:%M:%S')}] ✅ Keep-alive successful - Render will stay awake")
+            print(f"[{time.strftime('%H:%M:%S')}] Keep-alive successful - Render will stay awake")
             data = response.json()
             system_health = data.get('system_health', {})
             healthy_agents = system_health.get('healthy_agents', 0)
             total_agents = system_health.get('total_agents', 0)
             print(f"[{time.strftime('%H:%M:%S')}] 📊 System health: {healthy_agents}/{total_agents} agents running")
         else:
-            print(f"[{time.strftime('%H:%M:%S')}] ⚠️ Keep-alive returned status: {response.status_code}")
+            print(f"[{time.strftime('%H:%M:%S')}] Keep-alive returned status: {response.status_code}")
             
     except requests.exceptions.RequestException as e:
-        print(f"[{time.strftime('%H:%M:%S')}] ❌ Keep-alive failed: {e}")
+        print(f"[{time.strftime('%H:%M:%S')}] Keep-alive failed: {e}")
     except Exception as e:
-        print(f"[{time.strftime('%H:%M:%S')}] ❌ Error during keep-alive: {e}")
+        print(f"[{time.strftime('%H:%M:%S')}] Error during keep-alive: {e}")
 
 def periodic_trigger():
     """Run the periodic trigger every 50 seconds to keep Render awake"""
-    print("🚀 Starting Render keep-alive system...")
+    print("Starting Render keep-alive system...")
     while True:
-        time.sleep(50)  # Wait 50 seconds (Render hibernates after ~15 minutes of inactivity)
         trigger_root_endpoint()
 
 def main():
@@ -231,14 +228,13 @@ def main():
     signal.signal(signal.SIGTERM, signal_handler)
     
     processes = start_all_agents()
-    print("🚀 EduFinder Multi-Agent System is now ACTIVE!")
+    print("EduFinder Multi-Agent System is now ACTIVE!")
     print("📊 All agents are running with live logs")
-    print("🧠 MeTTa Knowledge Graph integration: ACTIVE")
+    print("MeTTa Knowledge Graph integration: ACTIVE")
     print("🌐 Unlimited domain support: ENABLED")
     print("⏰ Render keep-alive system: Every 50 seconds")
     print("💤 Prevents Render hibernation on free tier")
     
-    # Start the periodic trigger thread
     trigger_thread = threading.Thread(target=periodic_trigger, daemon=True)
     trigger_thread.start()
     print("🔄 Render keep-alive thread started")

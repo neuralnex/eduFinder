@@ -137,15 +137,12 @@ class DynamicMeTTaKnowledgeGraph:
         try:
             concept_key = concept.lower().replace(" ", "_")
             
-            # Check if concept exists in knowledge graph
             concept_pattern = E(S("concept"), S(concept_key), S(domain))
             concept_exists = self.metta.space().query(concept_pattern)
             
             if not concept_exists:
-                # Dynamically analyze and add the concept
                 await self._dynamically_analyze_concept(concept, domain)
             
-            # Query the concept data
             definition_pattern = E(S("definition"), S(concept_key), V("def"))
             definition_result = self.metta.space().query(definition_pattern)
             definition = str(definition_result[0]["def"]) if definition_result and not definition_result.is_empty() else f"Dynamic analysis of {concept}"
@@ -186,22 +183,17 @@ class DynamicMeTTaKnowledgeGraph:
         try:
             concept_key = concept.lower().replace(" ", "_")
             
-            # Add the concept to the knowledge graph
             self.metta.space().add_atom(E(S("concept"), S(concept_key), S(domain)))
             
-            # Generate dynamic definition
             definition = f"Dynamic analysis of {concept} in {domain} - a comprehensive learning concept"
             self.metta.space().add_atom(E(S("definition"), S(concept_key), ValueAtom(definition)))
             
-            # Generate dynamic difficulty based on concept complexity
             difficulty = "Intermediate" if len(concept.split()) > 1 else "Beginner"
             self.metta.space().add_atom(E(S("difficulty"), S(concept_key), ValueAtom(difficulty)))
             
-            # Generate dynamic time estimate
             time_estimate = f"{len(concept.split()) * 2}-{len(concept.split()) * 4} weeks"
             self.metta.space().add_atom(E(S("time_estimate"), S(concept_key), ValueAtom(time_estimate)))
             
-            # Add some dynamic prerequisites based on domain
             if domain in ["programming", "data_science"]:
                 self.metta.space().add_atom(E(S("prerequisite"), S(concept_key), S("problem_solving")))
                 self.metta.space().add_atom(E(S("prerequisite"), S(concept_key), S("logical_thinking")))
@@ -217,7 +209,6 @@ class DynamicMeTTaKnowledgeGraph:
     async def _generate_dynamic_learning_path(self, concept: str, domain: str) -> List[str]:
         """Generate a dynamic learning path for any concept"""
         try:
-            # Generate learning steps based on concept complexity and domain
             base_steps = [
                 f"Introduction to {concept}",
                 f"Core concepts of {concept}",
@@ -226,7 +217,6 @@ class DynamicMeTTaKnowledgeGraph:
                 f"Real-world projects with {concept}"
             ]
             
-            # Add domain-specific steps
             if domain == "programming":
                 base_steps.insert(1, f"Setting up development environment for {concept}")
                 base_steps.insert(-1, f"Best practices and patterns in {concept}")
@@ -266,14 +256,12 @@ class DynamicMeTTaKnowledgeGraph:
         """Dynamically detect domain from any query"""
         if self.use_real_metta:
             try:
-                # Use MeTTa's domain detection operation
                 result = self.metta.run(f'!(detect-domain "{query}")')
                 if result and len(result) > 0 and len(result[0]) > 0:
                     return str(result[0][0])
             except Exception as e:
                 print(f"MeTTa domain detection error: {e}")
         
-        # Fallback domain detection
         query_lower = query.lower()
         domain_keywords = {
             "programming": ["code", "program", "software", "development", "coding", "python", "javascript", "java"],
@@ -297,13 +285,11 @@ class DynamicMeTTaKnowledgeGraph:
     async def suggest_learning_order(self, domain: str, concepts: List[str]) -> List[str]:
         """Dynamic learning order suggestion for any concepts"""
         try:
-            # Use MeTTa's relationship analysis
             learning_order = []
             remaining_concepts = concepts.copy()
             
             while remaining_concepts:
                 for concept in remaining_concepts[:]:
-                    # Check prerequisites dynamically
                     concept_data = await self.query_learning_concepts(domain, concept)
                     prerequisites = concept_data.get("prerequisites", [])
                     
@@ -327,7 +313,6 @@ class DynamicMeTTaKnowledgeGraph:
             try:
                 concept_key = concept.lower().replace(" ", "_")
                 
-                # Add concept to knowledge graph
                 self.metta.space().add_atom(E(S("concept"), S(concept_key), S(domain)))
                 
                 if "definition" in knowledge_data:

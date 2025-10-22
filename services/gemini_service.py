@@ -107,14 +107,10 @@ class GeminiLearningService:
             
             Analyze the user's request and create a personalized learning path that includes:
             
-            # {domain.replace('_', ' ').title()} Educational Plan
             
-            ## Overview
             Brief introduction tailored to the user's specific request and what they will achieve
             
-            ## Learning Path (Step-by-Step)
             
-            ### Step 1: [Topic Name]
             **Duration**: [X weeks/hours]
             **Difficulty**: [Beginner/Intermediate/Advanced]
             **What you'll learn**: [Specific skills/concepts relevant to their query]
@@ -134,13 +130,10 @@ class GeminiLearningService:
             
             [Continue for 5-8 steps covering the complete learning journey based on their specific request]
             
-            ## Prerequisites
             What learners need to know before starting (tailored to their query)
             
-            ## Estimated Timeline
             Total duration and recommended study schedule
             
-            ## Next Steps
             How to continue learning after completing this plan
             
             Make it practical with real, working links and specific resources.
