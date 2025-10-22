@@ -34,8 +34,6 @@ class GeminiLearningService:
         
         if self.gemini_available:
             self.client = genai.Client(api_key=GEMINI_API_KEY)
-        else:
-            self.client = None
 
     def _extract_concepts_from_query(self, query: str) -> List[str]:
         query_lower = query.lower()
@@ -262,8 +260,10 @@ Respond as an insights specialist. Be enthusiastic about providing deep understa
             
             prompt = context_prompts.get(context_type, context_prompts["general"])
             
-            model = genai.GenerativeModel('gemini-pro')
-            response = model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model="gemini-2.5-flash", 
+                contents=prompt
+            )
             return response.text
             
         except Exception as e:
@@ -334,7 +334,7 @@ Respond as an insights specialist. Be enthusiastic about providing deep understa
             """
             
             response = self.client.models.generate_content(
-                model="gemini-2.5-flash",
+                model="gemini-2.5-flash", 
                 contents=prompt
             )
             return response.text
