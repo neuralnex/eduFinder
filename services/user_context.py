@@ -18,6 +18,9 @@ class LearningPreferences:
     pace: str = "moderate"
     focus_areas: List[str] = None
     avoid_topics: List[str] = None
+    preferred_duration: str = "flexible"
+    practice_focus: bool = True
+    daily_time_commitment: str = "not specified"
     
     def __post_init__(self):
         if self.focus_areas is None:
@@ -119,17 +122,20 @@ class UserContextManager:
         beginner_indicators = [
             "beginner", "new to", "never learned", "don't know", "first time",
             "starting", "basics", "fundamentals", "intro", "introduction",
-            "never done", "no experience", "complete beginner"
+            "never done", "no experience", "complete beginner", "learning speed is not that good",
+            "slow learner", "struggle", "difficult", "hard for me", "not good at"
         ]
         
         intermediate_indicators = [
             "some experience", "basic knowledge", "familiar with", "know basics",
-            "intermediate", "somewhat", "a bit", "little bit", "some understanding"
+            "intermediate", "somewhat", "a bit", "little bit", "some understanding",
+            "have done some", "know a little", "basic level"
         ]
         
         advanced_indicators = [
             "advanced", "expert", "proficient", "experienced", "deep knowledge",
-            "master", "professional", "expertise", "comprehensive", "thorough"
+            "master", "professional", "expertise", "comprehensive", "thorough",
+            "very good at", "excellent", "advanced level", "senior level"
         ]
         
         message_lower = message.lower()
@@ -169,6 +175,74 @@ class UserContextManager:
             self.save_contexts()
         
         return goals
+    
+    def extract_learning_duration(self, user_id: str, message: str) -> str:
+        context = self.get_context(user_id)
+        
+        duration_patterns = {
+            "quick": ["quick", "fast", "rapid", "crash course", "intensive", "bootcamp"],
+            "short": ["short", "brief", "few weeks", "month", "couple of weeks", "2-4 weeks"],
+            "medium": ["few months", "3-6 months", "half year", "medium term"],
+            "long": ["long term", "year", "extensive", "comprehensive", "thorough", "deep dive"],
+            "flexible": ["flexible", "at my own pace", "whenever", "no rush", "take my time"]
+        }
+        
+        message_lower = message.lower()
+        
+        for duration, patterns in duration_patterns.items():
+            if any(pattern in message_lower for pattern in patterns):
+                context.preferences.preferred_duration = duration
+                self.save_contexts()
+                return duration
+        
+        return context.preferences.preferred_duration
+    
+    def extract_practice_preferences(self, user_id: str, message: str) -> bool:
+        context = self.get_context(user_id)
+        
+        practice_indicators = [
+            "practice", "hands-on", "practical", "build", "create", "project",
+            "exercise", "coding", "doing", "making", "implementing"
+        ]
+        
+        theory_indicators = [
+            "theory", "concepts", "understanding", "knowledge", "reading",
+            "studying", "learning about", "explaining"
+        ]
+        
+        message_lower = message.lower()
+        
+        if any(indicator in message_lower for indicator in practice_indicators):
+            context.preferences.practice_focus = True
+            self.save_contexts()
+            return True
+        elif any(indicator in message_lower for indicator in theory_indicators):
+            context.preferences.practice_focus = False
+            self.save_contexts()
+            return False
+        
+        return context.preferences.practice_focus
+    
+    def extract_time_commitment(self, user_id: str, message: str) -> str:
+        context = self.get_context(user_id)
+        
+        time_patterns = {
+            "30 minutes": ["30 min", "half hour", "30 minutes"],
+            "1 hour": ["1 hour", "one hour", "60 min", "hour a day"],
+            "2 hours": ["2 hours", "two hours", "couple hours"],
+            "3+ hours": ["3 hours", "several hours", "many hours", "long sessions"],
+            "flexible": ["flexible", "whenever", "spare time", "free time"]
+        }
+        
+        message_lower = message.lower()
+        
+        for time_commitment, patterns in time_patterns.items():
+            if any(pattern in message_lower for pattern in patterns):
+                context.preferences.daily_time_commitment = time_commitment
+                self.save_contexts()
+                return time_commitment
+        
+        return context.preferences.daily_time_commitment
     
     def get_personalized_greeting(self, user_id: str) -> str:
         context = self.get_context(user_id)

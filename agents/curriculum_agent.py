@@ -94,18 +94,16 @@ What would you like to learn about?
             
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
             if any(greeting in item.text.lower() for greeting in greeting_words):
-                greeting_response = """
-Hello! I'm the Curriculum Agent, your AI-powered learning path creator!
-
-I specialize in creating structured educational curricula for ANY domain using dynamic AI analysis. Whether you want to learn quantum physics, cooking, philosophy, programming, or any other subject, I can break it down into manageable learning steps using MeTTa knowledge graph insights.
-
-What would you like to learn about? Just tell me your learning goals and I'll create a personalized curriculum for you!
-                """
+                greeting_response = await gemini_service.generate_conversational_response(
+                    user_query=item.text,
+                    context_type="curriculum_greeting",
+                    user_id=sender
+                )
                 response_message = create_text_chat(greeting_response)
                 await ctx.send(sender, response_message)
             else:
                 print(f"[CURRICULUM AGENT] Generating curriculum using Gemini + MeTTa...")
-                response = await gemini_service.generate_curriculum("general", item.text)
+                response = await gemini_service.generate_curriculum("general", item.text, sender)
                 
                 print(f"[CURRICULUM AGENT] Curriculum generated, sending response...")
                 response_message = create_text_chat(response)
@@ -138,7 +136,7 @@ async def handle_curriculum_request(ctx: Context, sender: str, msg: CurriculumRe
     ctx.logger.info(f"Received curriculum request from {sender}: {msg.domain}")
     
     try:
-        curriculum = await gemini_service.generate_curriculum(msg.domain, msg.user_query)
+        curriculum = await gemini_service.generate_curriculum(msg.domain, msg.user_query, msg.original_sender)
         await ctx.send(sender, CurriculumResponse(
             curriculum=curriculum,
             success=True,

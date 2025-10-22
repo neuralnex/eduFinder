@@ -154,6 +154,9 @@ What would you like to learn today?
             
             learning_level = user_context_manager.assess_learning_level(sender, item.text)
             learning_goals = user_context_manager.extract_learning_goals(sender, item.text)
+            learning_duration = user_context_manager.extract_learning_duration(sender, item.text)
+            practice_focus = user_context_manager.extract_practice_preferences(sender, item.text)
+            time_commitment = user_context_manager.extract_time_commitment(sender, item.text)
             
             if learning_level != "unknown":
                 user_context_manager.update_context(sender, learning_level=learning_level)
@@ -161,31 +164,51 @@ What would you like to learn today?
             if learning_goals:
                 user_context_manager.update_context(sender, learning_goals=learning_goals)
             
-            greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
+            if learning_duration != "flexible":
+                user_context_manager.update_context(sender, preferred_duration=learning_duration)
+            
+            if practice_focus:
+                user_context_manager.update_context(sender, practice_focus=practice_focus)
+            
+            if time_commitment != "not specified":
+                user_context_manager.update_context(sender, daily_time_commitment=time_commitment)
+            
+            greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings", "how are you", "how are you doing"]
             if any(greeting in user_input for greeting in greeting_words):
-                personalized_greeting = user_context_manager.get_personalized_greeting(sender)
-                response = f"""
-{personalized_greeting}
-
-I'm your comprehensive learning assistant that can help you with:
-
-**Personalized Learning Support:**
-• **Curriculum Creation** - Structured learning paths tailored to your level
-• **Resource Discovery** - Educational materials that match your learning style  
-• **Deep Insights** - Concept relationships and learning dependencies
-• **Progress Tracking** - I remember what you've learned and what's next
-
-I work with specialized AI agents to provide you with personalized educational experiences. Just tell me what you want to learn about, your current level, and your goals, and I'll create the perfect learning plan for you!
-
-What would you like to learn today?
-                """
+                response = await gemini_service.generate_conversational_response(
+                    user_query=item.text,
+                    context_type="greeting",
+                    user_id=sender
+                )
+            elif any(phrase in user_input for phrase in ["thank you", "thanks", "appreciate", "grateful"]):
+                response = await gemini_service.generate_conversational_response(
+                    user_query=item.text,
+                    context_type="gratitude",
+                    user_id=sender
+                )
+            elif any(phrase in user_input for phrase in ["learning speed", "slow learner", "not good", "struggle", "difficult", "hard for me"]):
+                user_context_manager.update_context(sender, preferences=user_context.preferences)
+                user_context.preferences.pace = "slow"
+                user_context_manager.save_contexts()
+                
+                response = await gemini_service.generate_conversational_response(
+                    user_query=item.text,
+                    context_type="learning_pace",
+                    user_id=sender
+                )
             elif any(keyword in user_input for keyword in ["teach me", "learn", "educational plan", "learning plan", "study plan", "curriculum", "learning path", "create a", "help me learn"]):
                 topic = _extract_topic_from_query(item.text)
                 domain = _extract_domain_from_query(item.text)
                 
                 user_context_manager.update_context(sender, current_topic=topic, current_domain=domain)
                 
-                adaptive_prefix = user_context_manager.get_adaptive_response_prefix(sender, topic.replace('_', ' '))
+                conversational_response = await gemini_service.generate_conversational_response(
+                    user_query=item.text,
+                    context_type="learning_request",
+                    user_id=sender,
+                    topic=topic,
+                    domain=domain
+                )
                 
                 import time
                 request_id = f"educational_plan_{int(time.time())}_{topic}_{domain}"
@@ -198,7 +221,7 @@ What would you like to learn today?
                     original_sender=sender,
                     request_id=request_id
                 ))
-                response = f"{adaptive_prefix}Creating your personalized educational plan for {topic.replace('_', ' ').title()}..."
+                response = conversational_response
                 
             elif any(keyword in user_input for keyword in ["resources", "find", "get me", "show me", "videos", "courses", "books", "tutorials", "materials"]):
                 topic = _extract_topic_from_query(item.text)
@@ -283,74 +306,11 @@ What would you like to learn today?
 What would you like to learn?
                 """
             else:
-                if any(keyword in user_input for keyword in ["ai", "machine learning", "deep learning", "neural network"]):
-                    response = f"""
-I understand you want to learn about: "{item.text}"
-
-Let me help you with AI Engineering! I can:
-
-1. **Create a structured curriculum** - Tell me "teach me AI engineering"
-2. **Find learning resources** - Ask me "find machine learning resources"  
-3. **Explain concepts deeply** - Say "explain deep learning concepts"
-
-**Available Learning Areas:**
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
-• **Data Science** - Data analysis, statistics, machine learning
-
-What would you like me to help you with?
-                    """
-                elif any(keyword in user_input for keyword in ["blockchain", "web3", "smart contract", "cryptocurrency"]):
-                    response = f"""
-I understand you want to learn about: "{item.text}"
-
-Let me help you with Web3 Development! I can:
-
-1. **Create a structured curriculum** - Tell me "teach me blockchain development"
-2. **Find learning resources** - Ask me "find blockchain resources"
-3. **Explain concepts deeply** - Say "explain smart contracts"
-
-**Available Learning Areas:**
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
-• **Data Science** - Data analysis, statistics, machine learning
-
-What would you like me to help you with?
-                    """
-                elif any(keyword in user_input for keyword in ["data", "statistics", "analysis", "python"]):
-                    response = f"""
-I understand you want to learn about: "{item.text}"
-
-Let me help you with Data Science! I can:
-
-1. **Create a structured curriculum** - Tell me "teach me data science"
-2. **Find learning resources** - Ask me "find data analysis resources"
-3. **Explain concepts deeply** - Say "explain statistics concepts"
-
-**Available Learning Areas:**
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
-• **Data Science** - Data analysis, statistics, machine learning
-
-What would you like me to help you with?
-                    """
-                else:
-                    response = f"""
-I understand you want to learn about: "{item.text}"
-
-I can help you with comprehensive learning support for:
-
-• **AI Engineering** - Machine learning, deep learning, neural networks
-• **Web3 Development** - Blockchain, smart contracts, DApps
-• **Data Science** - Data analysis, statistics, machine learning
-
-**How I can help:**
-1. **Create structured curricula** - "Teach me [domain]"
-2. **Find learning resources** - "Find [topic] resources"
-3. **Explain concepts deeply** - "Explain [concept]"
-
-What would you like to learn about?
-                    """
+                response = await gemini_service.generate_conversational_response(
+                    user_query=item.text,
+                    context_type="general",
+                    user_id=sender
+                )
             
             response_message = create_text_chat(response)
             await ctx.send(sender, response_message)

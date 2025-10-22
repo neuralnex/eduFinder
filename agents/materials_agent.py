@@ -138,13 +138,11 @@ What resources do you need?
             
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
             if any(greeting in item.text.lower() for greeting in greeting_words):
-                greeting_response = """
-Hello! I'm the Materials Agent, your educational resource discovery specialist!
-
-I specialize in finding and providing educational resources with direct links for ANY domain using dynamic AI analysis. I can discover YouTube videos, courses, books, documentation, and hands-on projects to help you learn effectively using MeTTa knowledge graph insights.
-
-What resources do you need? Just tell me what you want to learn and I'll find the best materials for you!
-                """
+                greeting_response = await gemini_service.generate_conversational_response(
+                    user_query=item.text,
+                    context_type="materials_greeting",
+                    user_id=sender
+                )
                 response_message = create_text_chat(greeting_response)
                 await ctx.send(sender, response_message)
             else:
@@ -157,24 +155,25 @@ What resources do you need? Just tell me what you want to learn and I'll find th
                 search_query = topic.replace("_", " ") + " tutorial"
                 videos = await gemini_service.search_youtube_videos(search_query, 5)
                 if videos:
-                    response += "\n\n**Latest YouTube Learning Resources:**\n"
+                    response += "\n\n**🎥 Interactive Learning Videos:**\n"
                     for i, video in enumerate(videos, 1):
                         response += f"**{i}. {video['title']}**\n"
-                        response += f"   Channel: {video['channel']}\n"
-                        response += f"   Duration: {video['duration']}\n"
-                        response += f"   Views: {video['views']}\n"
-                        response += f"   Published: {video['published']}\n"
-                        response += f"   Watch: {video['url']}\n"
+                        response += f"   📺 Channel: {video['channel']}\n"
+                        response += f"   ⏱️ Duration: {video['duration']}\n"
+                        response += f"   👀 Views: {video['views']}\n"
+                        response += f"   📅 Published: {video['published']}\n"
+                        response += f"   🔗 Watch: {video['url']}\n"
+                        response += f"   🖼️ Thumbnail: {video['thumbnail']}\n"
                         if video.get('description'):
-                            response += f"   Description: {video['description']}\n"
+                            response += f"   📝 Description: {video['description']}\n"
                         response += "\n"
                     
-                    response += "**Additional Learning Resources:**\n"
-                    response += "• **Free Courses**: Coursera (coursera.org), edX (edx.org), Khan Academy (khanacademy.org)\n"
-                    response += "• **Practice Platforms**: LeetCode (leetcode.com), HackerRank (hackerrank.com), Codewars (codewars.com)\n"
-                    response += "• **Documentation**: Python Docs (docs.python.org), MDN Web Docs (developer.mozilla.org)\n"
-                    response += "• **Community**: Reddit (reddit.com/r/learnprogramming), Stack Overflow (stackoverflow.com)\n"
-                    response += "• **Interactive Learning**: Codecademy (codecademy.com), freeCodeCamp (freecodecamp.org)\n"
+                    response += "**💡 Practice-Focused Learning Resources:**\n"
+                    response += "• **Hands-on Projects**: Build real applications as you learn\n"
+                    response += "• **Interactive Coding**: Practice with live coding exercises\n"
+                    response += "• **Project-Based Learning**: Learn by creating, not just reading\n"
+                    response += "• **Community Practice**: Join coding communities for peer learning\n"
+                    response += "• **Daily Practice**: Consistent practice beats intensive studying\n"
                 
                 print(f"[MATERIALS AGENT] Materials generated, sending response...")
                 response_message = create_text_chat(response)
@@ -213,23 +212,25 @@ async def handle_materials_request(ctx: Context, sender: str, msg: MaterialsRequ
         if msg.include_youtube:
             videos = await gemini_service.search_youtube_videos(f"{msg.topic} {msg.domain} tutorial", 5)
             if videos:
-                youtube_videos = "\n\n**Latest YouTube Learning Resources:**\n"
+                youtube_videos = "\n\n**🎥 Interactive Learning Videos:**\n"
                 for i, video in enumerate(videos, 1):
                     youtube_videos += f"**{i}. {video['title']}**\n"
-                    youtube_videos += f"   Channel: {video['channel']}\n"
-                    youtube_videos += f"   Duration: {video['duration']}\n"
-                    youtube_videos += f"   Views: {video['views']}\n"
-                    youtube_videos += f"   Published: {video['published']}\n"
-                    youtube_videos += f"   Watch: {video['url']}\n"
+                    youtube_videos += f"   📺 Channel: {video['channel']}\n"
+                    youtube_videos += f"   ⏱️ Duration: {video['duration']}\n"
+                    youtube_videos += f"   👀 Views: {video['views']}\n"
+                    youtube_videos += f"   📅 Published: {video['published']}\n"
+                    youtube_videos += f"   🔗 Watch: {video['url']}\n"
+                    youtube_videos += f"   🖼️ Thumbnail: {video['thumbnail']}\n"
                     if video.get('description'):
-                        youtube_videos += f"   Description: {video['description']}\n"
+                        youtube_videos += f"   📝 Description: {video['description']}\n"
                     youtube_videos += "\n"
                 
-                youtube_videos += "**Additional Learning Resources:**\n"
-                youtube_videos += "• **Free Courses**: https://www.coursera.org/, https://www.edx.org/\n"
-                youtube_videos += "• **Practice Platforms**: https://leetcode.com/, https://www.hackerrank.com/\n"
-                youtube_videos += "• **Documentation**: https://docs.python.org/, https://developer.mozilla.org/\n"
-                youtube_videos += "• **Community**: Reddit, Stack Overflow, Discord communities\n"
+                youtube_videos += "**💡 Practice-Focused Learning Resources:**\n"
+                youtube_videos += "• **Hands-on Projects**: Build real applications as you learn\n"
+                youtube_videos += "• **Interactive Coding**: Practice with live coding exercises\n"
+                youtube_videos += "• **Project-Based Learning**: Learn by creating, not just reading\n"
+                youtube_videos += "• **Community Practice**: Join coding communities for peer learning\n"
+                youtube_videos += "• **Daily Practice**: Consistent practice beats intensive studying\n"
         
         await ctx.send(sender, MaterialsResponse(
             materials=materials,

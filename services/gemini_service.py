@@ -2,8 +2,7 @@ import os
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 
-import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from services.user_context import user_context_manager
 
 try:
     from google import genai
@@ -58,7 +57,7 @@ class GeminiLearningService:
         
         return concepts[:5]
 
-    async def generate_curriculum(self, domain: str, user_query: str = "") -> str:
+    async def generate_curriculum(self, domain: str, user_query: str = "", user_id: str = None) -> str:
         if not self.gemini_available:
             return self._get_fallback_curriculum(domain)
         
@@ -97,13 +96,36 @@ class GeminiLearningService:
                 pass
         
         try:
+            user_context_info = ""
+            if user_id:
+                user_context = user_context_manager.get_context(user_id)
+                learning_level = "beginner" if user_context.learning_level.beginner else "intermediate" if user_context.learning_level.intermediate else "advanced" if user_context.learning_level.advanced else "beginner"
+                learning_pace = user_context.preferences.pace
+                preferred_duration = user_context.preferences.preferred_duration
+                practice_focus = user_context.preferences.practice_focus
+                daily_time = user_context.preferences.daily_time_commitment
+                
+                user_context_info = f"""
+**User Learning Profile:**
+- Learning Level: {learning_level}
+- Learning Pace: {learning_pace}
+- Preferred Duration: {preferred_duration}
+- Daily Time Commitment: {daily_time}
+- Practice Focus: {'Yes - emphasize hands-on projects' if practice_focus else 'No - focus on theory and concepts'}
+- Current Topic: {user_context.current_topic or 'Not specified'}
+- Learning Goals: {', '.join(user_context.learning_goals) if user_context.learning_goals else 'Not specified'}
+"""
+            
             prompt = f"""
             User Query: "{user_query}"
             Detected Domain: {domain}
+            {user_context_info}
             
-            Based on the user's specific query, create a comprehensive educational plan that directly addresses what they want to learn.
+            Based on the user's specific query and learning profile, create a comprehensive educational plan that directly addresses what they want to learn.
             
             {metta_insights}
+            
+            **IMPORTANT**: Focus heavily on PRACTICE and HANDS-ON PROJECTS. Learning by doing is the most effective way to master any skill.
             
             Analyze the user's request and create a personalized learning path that includes:
             
@@ -149,6 +171,103 @@ class GeminiLearningService:
         except Exception as e:
             print(f"Gemini curriculum generation failed: {e}")
             return self._get_fallback_curriculum(domain)
+    
+    async def generate_conversational_response(self, user_query: str, context_type: str, user_id: str = None, topic: str = None, domain: str = None) -> str:
+        if not self.gemini_available:
+            return "I'm here to help you learn! What would you like to learn about?"
+        
+        try:
+            user_context_info = ""
+            if user_id:
+                user_context = user_context_manager.get_context(user_id)
+                learning_level = "beginner" if user_context.learning_level.beginner else "intermediate" if user_context.learning_level.intermediate else "advanced" if user_context.learning_level.advanced else "beginner"
+                learning_pace = user_context.preferences.pace
+                preferred_duration = user_context.preferences.preferred_duration
+                practice_focus = user_context.preferences.practice_focus
+                daily_time = user_context.preferences.daily_time_commitment
+                
+                user_context_info = f"""
+**User Profile:**
+- Learning Level: {learning_level}
+- Learning Pace: {learning_pace}
+- Preferred Duration: {preferred_duration}
+- Daily Time: {daily_time}
+- Practice Focus: {'Yes' if practice_focus else 'No'}
+- Current Topic: {user_context.current_topic or 'None'}
+- Learning Goals: {', '.join(user_context.learning_goals) if user_context.learning_goals else 'None'}
+- Session Count: {user_context.session_count}
+"""
+            
+            context_prompts = {
+                "greeting": f"""
+You are EduFinder, an intelligent learning companion. The user just greeted you: "{user_query}"
+
+{user_context_info}
+
+Respond naturally and warmly as a learning assistant. Be conversational, encouraging, and show enthusiasm for helping them learn. Ask what they'd like to learn about today. Keep it friendly and personal.
+""",
+                "gratitude": f"""
+The user expressed gratitude: "{user_query}"
+
+{user_context_info}
+
+Respond warmly and encouragingly. Acknowledge their thanks and motivate them to continue learning. Ask what they'd like to learn next or if they need help with anything specific.
+""",
+                "learning_pace": f"""
+The user mentioned their learning speed or pace: "{user_query}"
+
+{user_context_info}
+
+Respond with empathy and encouragement. Acknowledge that everyone learns differently and reassure them. Offer to create a learning plan that matches their pace. Be supportive and understanding.
+""",
+                "learning_request": f"""
+The user wants to learn something: "{user_query}"
+
+{user_context_info}
+
+Topic: {topic or 'Not specified'}
+Domain: {domain or 'Not specified'}
+
+Respond enthusiastically about their learning goal. Show that you understand what they want to learn and their preferences. Be encouraging and mention that you'll create a personalized plan. Keep it conversational and motivating.
+""",
+                "general": f"""
+The user said: "{user_query}"
+
+{user_context_info}
+
+Respond naturally as a helpful learning assistant. If you're not sure what they want, ask clarifying questions about their learning goals. Be friendly, encouraging, and guide them toward learning opportunities.
+""",
+                "curriculum_greeting": f"""
+You are the Curriculum Agent, specialized in creating learning paths. The user greeted you: "{user_query}"
+
+{user_context_info}
+
+Respond as a curriculum specialist. Be enthusiastic about creating personalized learning plans. Mention your expertise in breaking down complex topics into manageable steps. Ask what they'd like to learn about.
+""",
+                "materials_greeting": f"""
+You are the Materials Agent, specialized in finding educational resources. The user greeted you: "{user_query}"
+
+{user_context_info}
+
+Respond as a resource discovery specialist. Be enthusiastic about finding the best learning materials. Mention your ability to find videos, courses, books, and hands-on projects. Ask what resources they need.
+""",
+                "enhanced_greeting": f"""
+You are the Enhanced Learning Agent, specialized in deep insights and concept analysis. The user greeted you: "{user_query}"
+
+{user_context_info}
+
+Respond as an insights specialist. Be enthusiastic about providing deep understanding and concept relationships. Mention your ability to explain complex topics and show connections between ideas. Ask what they'd like to understand deeply.
+"""
+            }
+            
+            prompt = context_prompts.get(context_type, context_prompts["general"])
+            
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(prompt)
+            return response.text
+            
+        except Exception as e:
+            return f"I'm here to help you learn! What would you like to learn about? (Error: {str(e)})"
 
     async def generate_learning_materials(self, topic: str, domain: str, user_query: str = "") -> str:
         if not self.gemini_available:
@@ -349,6 +468,8 @@ class GeminiLearningService:
                         "duration": content_details.get('duration', 'Unknown Duration'),
                         "views": f"{int(statistics.get('viewCount', 0)):,} views",
                         "url": f"https://www.youtube.com/watch?v={video['id']}",
+                        "embed_url": f"https://www.youtube.com/embed/{video['id']}",
+                        "thumbnail": snippet.get('thumbnails', {}).get('high', {}).get('url', ''),
                         "description": snippet.get('description', '')[:100] + '...' if snippet.get('description') else '',
                         "published": snippet.get('publishedAt', 'Unknown Date')[:10]
                     })

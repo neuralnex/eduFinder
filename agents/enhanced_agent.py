@@ -138,13 +138,11 @@ What would you like to understand deeply?
             
             greeting_words = ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"]
             if any(greeting in item.text.lower() for greeting in greeting_words):
-                greeting_response = """
-Hello! I'm the Enhanced Learning Agent, your AI-powered deep insights specialist!
-
-I specialize in providing deep conceptual analysis and intelligent insights for ANY domain using dynamic AI analysis. I can explain how different concepts connect, identify prerequisites using MeTTa knowledge graph, and help you understand the relationships between various topics.
-
-What would you like to understand deeply? I'm here to provide comprehensive insights and analysis!
-                """
+                greeting_response = await gemini_service.generate_conversational_response(
+                    user_query=item.text,
+                    context_type="enhanced_greeting",
+                    user_id=sender
+                )
                 response_message = create_text_chat(greeting_response)
                 await ctx.send(sender, response_message)
             else:
